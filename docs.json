@@ -1,41 +1,100 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "theme": "linden",
+  "name": "Dotlet Documentation",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#ff5724",
+    "light": "#FF8A5C",
+    "dark": "#CC4A1E"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/dotlet_icon.svg",
   "navigation": {
-    "pages": [
+    "tabs": [
       {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart"
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/search-and-register-a-domain",
+              "guides/manage-dns-records",
+              "guides/embed-hosted-checkout"
+            ]
+          },
+          {
+            "group": "Essentials",
+            "pages": [
+              "essentials/errors",
+              "essentials/pagination"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/introduction"
+            ]
+          },
+          {
+            "group": "Domains",
+            "pages": [
+              "api-reference/domains/check-domain-availability",
+              "api-reference/domains/get-domain-price",
+              "api-reference/domains/search-domains",
+              "api-reference/domains/purchase-domain",
+              "api-reference/domains/list-domains",
+              "api-reference/domains/get-domain-info",
+              "api-reference/domains/renew-domain",
+              "api-reference/domains/update-nameservers",
+              "api-reference/domains/get-auth-code",
+              "api-reference/domains/setup-dns-for-domain",
+              "api-reference/domains/get-dns-setup-status"
+            ]
+          },
+          {
+            "group": "Orders",
+            "pages": [
+              "api-reference/orders/create-order",
+              "api-reference/orders/list-orders",
+              "api-reference/orders/get-order-details"
+            ]
+          },
+          {
+            "group": "DNS",
+            "pages": [
+              "api-reference/dns/list-dns-records",
+              "api-reference/dns/create-dns-record",
+              "api-reference/dns/get-dns-record",
+              "api-reference/dns/update-dns-record",
+              "api-reference/dns/delete-dns-record",
+              "api-reference/dns/sync-dns-records"
+            ]
+          },
+          {
+            "group": "Hosted Sessions",
+            "pages": [
+              "api-reference/hosted-sessions/create-hosted-session"
+            ]
+          }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/dotlet_logo_light.svg",
+    "dark": "/logo/dotlet_logo_dark.svg"
   },
   "navbar": {
     "links": [
@@ -47,7 +106,12 @@
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "href": "https://dotlet.net/app"
+    }
+  },
+  "api": {
+    "examples": {
+      "languages": ["curl", "javascript", "python", "go"]
     }
   },
   "contextual": {

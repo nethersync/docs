@@ -1,47 +1,109 @@
 ---
 title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+description: "Check a domain's availability and register it, in under 10 minutes."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
+This guide takes you from an API key to a registered domain. By the end, you'll have checked a domain's availability, seen its price, and purchased it through the API.
 
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
+**Time:** ~10 minutes
 
 ## Prerequisites
 
-Before you begin, you must have:
+- A Dotlet account with an API key. See [Authentication](/authentication) if you don't have one yet.
+- `curl`, or any HTTP client.
 
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
+## Step 1: Check domain availability
 
-## Get started
+Send a `GET` request with the domain you want, in the path.
 
-<Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+```bash
+curl https://api.dotlet.com/api/v1/registrar/availability/example.com \
+  -H "X-API-Key: dlt_live_••••••••••••••••"
+```
 
-    ```bash
-    npm install your-package
-    ```
-  </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+A domain that's free to register returns `available: true`:
 
-    ```bash
-    your-cli init
-    ```
-  </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+```json
+{
+  "domain": "example.com",
+  "available": true,
+  "status": "available",
+  "premium": false,
+  "price": "12.99",
+  "currency": "USD"
+}
+```
 
-    ```bash
-    your-cli start
-    ```
-  </Step>
-</Steps>
+If `available` is `false`, pick a different domain or try one of its suggested alternatives — see [Search and register a domain](/guides/search-and-register-a-domain) for keyword-based search.
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+## Step 2: Purchase the domain
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+Once you've found an available domain, register it with a single `POST` request. Registration requires a registrant contact — this is the person or organization the domain will be registered to.
+
+```bash
+curl -X POST https://api.dotlet.com/api/v1/registrar/purchase \
+  -H "X-API-Key: dlt_live_••••••••••••••••" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "domain": "example.com",
+    "years": 1,
+    "contact": {
+      "first_name": "Ada",
+      "last_name": "Lovelace",
+      "email": "ada@example.com",
+      "phone": "+14155550100",
+      "address1": "123 Main St",
+      "city": "San Francisco",
+      "state": "CA",
+      "postal_code": "94105",
+      "country": "US"
+    },
+    "privacy": true,
+    "auto_renew": true
+  }'
+```
+
+A successful purchase returns the new domain's order ID and registration details:
+
+```json
+{
+  "success": true,
+  "domain": "example.com",
+  "order_id": "8f14e45f-ceea-467e-bd6a-15e6e4f8c2f1",
+  "registration_date": "2026-06-30T00:00:00Z",
+  "expiry_date": "2027-06-30T00:00:00Z",
+  "nameservers": []
+}
+```
+
+<Note>
+  `/registrar/purchase` is a billable action that charges your account immediately. To review pricing and contact details before charging, create an order with [`POST /registrar/order`](/api-reference/orders/create-order) first, then complete it from your dashboard.
+</Note>
+
+## Step 3: Confirm the domain is yours
+
+List your registered domains to confirm the purchase went through.
+
+```bash
+curl https://api.dotlet.com/api/v1/registrar/domains \
+  -H "X-API-Key: dlt_live_••••••••••••••••"
+```
+
+`example.com` should now appear in the response with a `registration_status` of `active`.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Manage DNS records" icon="server" href="/guides/manage-dns-records">
+    Point your new domain at a server by creating A and CNAME records.
+  </Card>
+  <Card title="Search and register a domain" icon="magnifying-glass" href="/guides/search-and-register-a-domain">
+    Search by keyword instead of checking one domain at a time.
+  </Card>
+  <Card title="Embed hosted checkout" icon="window" href="/guides/embed-hosted-checkout">
+    Let your own users search for and buy domains inside your product.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/introduction">
+    See every parameter and response field for each endpoint.
+  </Card>
+</CardGroup>

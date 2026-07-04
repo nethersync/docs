@@ -1,0 +1,78 @@
+---
+title: "Embed hosted checkout"
+description: "Let your own users search for and purchase domains inside your product, without building the flow yourself."
+---
+
+Hosted sessions give you a pre-built, embeddable domain search-and-purchase flow. Create a session scoped to one of your end users, then redirect them to its URL or embed it in an iframe.
+
+This is useful if you're building a product where your own customers register domains — a website builder or hosting platform, for example — and don't want to build and maintain that flow yourself.
+
+## Create a hosted session
+
+Specify which actions the session allows. A session scoped to `domain_search` and `domain_purchase` lets the user search for and buy a domain, but not manage DNS or renewals.
+
+```bash
+curl -X POST https://api.dotlet.com/api/v1/hosted/sessions \
+  -H "X-API-Key: dlt_live_••••••••••••••••" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "allowed_actions": ["domain_search", "domain_purchase"],
+    "external_user_id": "user_4f9a1c",
+    "external_account_id": "acct_7be2d0",
+    "theme_config": {
+      "primary_color": "#0D9373",
+      "logo_url": "https://acmewidgets.com/logo.png",
+      "brand_name": "Acme Widgets"
+    },
+    "expires_in_minutes": 60
+  }'
+```
+
+`external_user_id` and `external_account_id` let you correlate the session — and anything purchased through it — back to your own user records. They're optional but recommended.
+
+```json
+{
+  "session_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "hosted_url": "https://checkout.dotlet.com/s/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "embed_url": "https://checkout.dotlet.com/embed/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "client_token": "cst_live_a1b2c3d4e5f6",
+  "expires_at": "2026-06-30T01:00:00Z"
+}
+```
+
+## Redirect or embed
+
+Use whichever fits your product:
+
+- **Redirect** — send the user's browser to `hosted_url` for a full-page checkout experience.
+- **Embed** — load `embed_url` in an `<iframe>` to keep the user inside your own product.
+
+```html
+<iframe
+  src="https://checkout.dotlet.com/embed/3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  width="100%"
+  height="640"
+  style="border: none;"
+></iframe>
+```
+
+## Session expiry
+
+Sessions expire after `expires_in_minutes` (5–1440 minutes, default 60). Create a new session each time a user starts a domain search or purchase flow — don't reuse a session across visits, since an expired session shows the user an error instead of the checkout flow.
+
+## Available actions
+
+| Action | Allows |
+|---|---|
+| `domain_search` | Searching for and viewing availability of domains |
+| `domain_purchase` | Completing a domain purchase |
+| `dns_manage` | Creating and editing DNS records for domains the user owns |
+| `renew` | Renewing a domain before it expires |
+
+Combine actions based on what you want the user to be able to do in that session — for example, a renewal reminder email might link to a session scoped to `["renew"]` only.
+
+## Next steps
+
+<Card title="Hosted Sessions API reference" icon="window" href="/api-reference/hosted-sessions/create-hosted-session">
+  Full request and response schema for hosted sessions.
+</Card>

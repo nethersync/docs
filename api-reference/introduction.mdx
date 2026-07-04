@@ -1,0 +1,35 @@
+---
+title: "API Reference"
+description: "Every endpoint in the Dotlet API, grouped by resource."
+---
+
+The reference below documents every endpoint, organized the way you'll use them:
+
+<CardGroup cols={2}>
+  <Card title="Domains" icon="globe" href="/api-reference/domains/check-domain-availability">
+    Search, price, register, renew, and manage domains.
+  </Card>
+  <Card title="Orders" icon="receipt" href="/api-reference/orders/create-order">
+    Create and track domain orders separately from immediate purchases.
+  </Card>
+  <Card title="DNS" icon="server" href="/api-reference/dns/list-dns-records">
+    Create, update, and sync DNS records.
+  </Card>
+  <Card title="Hosted Sessions" icon="window" href="/api-reference/hosted-sessions/create-hosted-session">
+    Embed a scoped domain search-and-purchase flow for your own users.
+  </Card>
+</CardGroup>
+
+## Base URL
+
+```
+https://api.dotlet.net
+```
+
+## Authentication
+
+Every endpoint below requires an `X-API-Key` header. See [Authentication](/authentication) for details.
+
+## Errors and pagination
+
+See [Errors](/essentials/errors) and [Pagination](/essentials/pagination) for response formats that apply across these endpoints.

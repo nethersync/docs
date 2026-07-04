@@ -1,0 +1,53 @@
+---
+title: "Pagination"
+description: "How list endpoints paginate results."
+---
+
+The Dotlet API uses two different pagination styles, depending on the endpoint.
+
+## Page-based pagination
+
+[`GET /registrar/orders`](/api-reference/orders/list-orders) uses page numbers.
+
+| Parameter | Default | Description |
+|---|---|---|
+| `page` | `1` | The page to return. |
+| `page_size` | `10` | Items per page. |
+| `order_status` | — | Optional filter by order status. |
+
+The response includes everything you need to build pagination controls:
+
+```json
+{
+  "items": [ /* ... */ ],
+  "total": 47,
+  "page": 1,
+  "page_size": 10,
+  "total_pages": 5
+}
+```
+
+Request the next page by incrementing `page`:
+
+```bash
+curl "https://api.dotlet.com/api/v1/registrar/orders?page=2&page_size=10" \
+  -H "X-API-Key: dlt_live_••••••••••••••••"
+```
+
+Stop once `page` equals `total_pages`.
+
+## Offset-based pagination
+
+[`GET /dns/{domain_name}/records`](/api-reference/dns/list-dns-records) uses `skip` and `limit` instead.
+
+| Parameter | Default | Description |
+|---|---|---|
+| `skip` | `0` | Number of records to skip. |
+| `limit` | `100` | Maximum records to return. |
+
+```bash
+curl "https://api.dotlet.com/api/v1/dns/acmewidgets.com/records?skip=100&limit=100" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+This endpoint returns a plain array rather than a wrapped object — when the array's length is smaller than `limit`, you've reached the end of the list.

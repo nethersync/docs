@@ -1,0 +1,93 @@
+---
+title: "Manage DNS records"
+description: "Create, update, and sync DNS records for a domain you've registered or hosted with Dotlet."
+---
+
+Once a domain has a DNS zone — created during purchase or with [setup-dns](/api-reference/domains/setup-dns-for-domain) — you can manage its records directly through the API.
+
+<Note>
+  The DNS record endpoints in this guide require a bearer token rather than an API key. See [Authentication](/authentication) for the difference.
+</Note>
+
+## List existing records
+
+```bash
+curl https://api.dotlet.com/api/v1/dns/acmewidgets.com/records \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+Results are paginated with `skip` and `limit` query parameters (default `limit` is 100):
+
+```bash
+curl "https://api.dotlet.com/api/v1/dns/acmewidgets.com/records?skip=0&limit=50" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+## Create a record
+
+Point your domain at a server by creating an `A` record. `record_type` accepts `A`, `AAAA`, `CNAME`, `MX`, `TXT`, `NS`, `SRV`, or `CAA`.
+
+```bash
+curl -X POST https://api.dotlet.com/api/v1/dns/acmewidgets.com/records \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "acmewidgets.com",
+    "record_type": "A",
+    "content": "203.0.113.10",
+    "ttl": 300
+  }'
+```
+
+```json
+{
+  "id": "9c858901-8a57-4791-81fe-4c455b099bc9",
+  "name": "acmewidgets.com",
+  "record_type": "A",
+  "content": "203.0.113.10",
+  "ttl": 300,
+  "priority": null,
+  "proxied": false
+}
+```
+
+For subdomains, include the full hostname in `name` — for example, `api.acmewidgets.com`. For an `MX` record, also set `priority`; for a Cloudflare-hosted zone, set `proxied: true` to route traffic through Cloudflare's proxy.
+
+## Update a record
+
+Send only the fields you want to change — `PUT` here behaves as a partial update, so omitted fields keep their current value.
+
+```bash
+curl -X PUT https://api.dotlet.com/api/v1/dns/acmewidgets.com/records/9c858901-8a57-4791-81fe-4c455b099bc9 \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "203.0.113.55"
+  }'
+```
+
+## Delete a record
+
+```bash
+curl -X DELETE https://api.dotlet.com/api/v1/dns/acmewidgets.com/records/9c858901-8a57-4791-81fe-4c455b099bc9 \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+A successful delete returns `204 No Content`.
+
+## Sync records from the provider
+
+If records were changed directly in your DNS provider's dashboard (for example, in Cloudflare) rather than through this API, sync them back into Dotlet so future API calls reflect the current state.
+
+```bash
+curl -X POST https://api.dotlet.com/api/v1/dns/acmewidgets.com/sync \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+Run a sync before scripting bulk updates, so you're not overwriting changes the API doesn't know about yet.
+
+## Next steps
+
+<Card title="DNS API reference" icon="server" href="/api-reference/dns/list-dns-records">
+  Full parameter and response details for every DNS endpoint.
+</Card>
