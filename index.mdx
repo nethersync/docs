@@ -1,20 +1,67 @@
 ---
-title: "Introduction"
-description: "Welcome to your project"
+title: "Dotlet"
+description: "The domain infrastructure layer for SaaS products — search, registration, DNS, and SSL, built into your app."
 ---
 
-Write a short description of your product here. What it does, who it's for, and what they can accomplish with it.
+Dotlet is the infrastructure layer behind custom domains. Instead of building a registrar integration, a DNS system, and SSL automation from scratch, you call one API.
 
-<Tip>
-  Ready to make this your own? Start by editing this page. Update your `docs.json` file to customize your site. Then fill out the [Quickstart](/quickstart) page.
-</Tip>
+Use Dotlet to let your customers bring — or buy — a domain, connect it to their account, and get a working, secure URL, without ever leaving your product.
 
-<Card title="Quickstart" icon="rocket" href="/quickstart">
-  This card links to the quickstart page in your project.
-</Card>
-<Card title="Components" icon="puzzle-piece" href="https://mintlify.com/docs/components">
-  Add cards, callouts, steps, tabs, and more to design and structure your pages.
-</Card>
-<Card title="Settings" icon="gear" href="https://mintlify.com/docs/organize/settings">
-  Set your site name, branding, and navigation in the `docs.json` file.
-</Card>
+## What Dotlet handles for you
+
+<CardGroup cols={2}>
+  <Card title="Domain search" icon="magnifying-glass" href="/guides/search-and-register-a-domain">
+    Check availability and help customers find and register a domain by keyword.
+  </Card>
+  <Card title="Domain provisioning" icon="link" href="/guides/search-and-register-a-domain">
+    Automatically attach a customer's domain to their account in your platform.
+  </Card>
+  <Card title="DNS management" icon="server" href="/guides/manage-dns-records">
+    Create and manage DNS records through an API — no manual zone editing.
+  </Card>
+  <Card title="SSL automation" icon="lock" href="/guides/manage-dns-records">
+    Provision HTTPS certificates for every customer domain and handle renewals automatically.
+  </Card>
+</CardGroup>
+
+None of this requires a registrar relationship, a DNS provider account, or a certificate authority integration on your side. Dotlet is the layer between your product and that infrastructure.
+
+## Built for platforms with many customer domains
+
+Dotlet is built for products where domains aren't a one-off setting, but a core part of the experience — one domain per customer, at scale.
+
+<CardGroup cols={2}>
+  <Card title="Website and no-code builders" icon="wand-magic-sparkles">
+    Let customers launch on their own domain without leaving your builder.
+  </Card>
+  <Card title="Multi-tenant SaaS platforms" icon="building" >
+    Give every tenant a custom domain instead of a shared subdomain.
+  </Card>
+  <Card title="Hosting platforms" icon="cloud" >
+    Offer domain registration and DNS as part of your hosting product.
+  </Card>
+  <Card title="Agencies building SaaS products" icon="briefcase" >
+    Ship custom-domain support without adding a registrar integration to your roadmap.
+  </Card>
+</CardGroup>
+
+## White-label by default
+
+Every domain workflow — search, purchase, DNS setup, renewal — can run entirely inside your product. Customers see your brand, not Dotlet's. Use the [hosted checkout](/guides/embed-hosted-checkout) to embed a pre-built flow in minutes, or call the API directly for full control over the UI.
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Check a domain's availability and register it in under 10 minutes.
+  </Card>
+  <Card title="Authentication" icon="key" href="/authentication">
+    Generate an API key and authenticate your first request.
+  </Card>
+  <Card title="Embed hosted checkout" icon="window" href="/guides/embed-hosted-checkout">
+    Drop a scoped, white-labeled domain flow into your product.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/introduction">
+    Explore every endpoint, parameter, and response shape.
+  </Card>
+</CardGroup>

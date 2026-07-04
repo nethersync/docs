@@ -1,0 +1,50 @@
+---
+title: "Authentication"
+description: "Authenticate requests to the Dotlet API with an API key or a bearer token."
+---
+
+The Dotlet API supports two ways to authenticate, depending on where the request comes from.
+
+| Method | Use when | Header |
+|---|---|---|
+| **API key** | Calling the API directly from a server, script, or backend integration | `X-API-Key` |
+| **Bearer token** | Calling the API on behalf of a signed-in user, such as from a dashboard or session | `Authorization: Bearer <token>` |
+
+Most endpoints accept either method. The DNS record endpoints (`/api/v1/dns/{domain_name}/records/*`) currently require a bearer token issued through OAuth2 password flow, since they're scoped to an authenticated dashboard session.
+
+## Authenticate with an API key
+
+Generate an API key from your Dotlet dashboard, then pass it on every request in the `X-API-Key` header.
+
+```bash
+curl https://api.dotlet.com/api/v1/registrar/availability/example.com \
+  -H "X-API-Key: dlt_live_••••••••••••••••"
+```
+
+<Warning>
+  Treat your API key like a password. Don't commit it to version control or expose it in client-side code. If a key is exposed, revoke it from your dashboard and generate a new one.
+</Warning>
+
+## Authenticate with a bearer token
+
+For endpoints that operate on behalf of a signed-in user, obtain a token from the password token endpoint and send it in the `Authorization` header.
+
+```bash
+curl https://api.dotlet.com/api/v1/dns/example.com/records \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+Tokens expire. If a request fails with a `401`, request a new token rather than retrying with the expired one.
+
+## Handling authentication errors
+
+| Status | Meaning | Fix |
+|---|---|---|
+| `401 Unauthorized` | No credentials were sent, or the token has expired | Include a valid `X-API-Key` or `Authorization` header |
+| `403 Forbidden` | Credentials were valid but don't have access to this resource | Confirm the key belongs to the organization that owns the domain or order |
+
+## Next step
+
+<Card title="Quickstart" icon="rocket" href="/quickstart">
+  Use your API key to check domain availability and register your first domain.
+</Card>

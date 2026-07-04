@@ -1,0 +1,124 @@
+---
+title: "Search and register a domain"
+description: "Find an available domain by keyword, then register it and point DNS at your hosting provider in one call."
+---
+
+This guide covers a more realistic registration flow than the quickstart: searching by keyword instead of one exact domain, reviewing pricing, and setting up DNS automatically as part of the purchase.
+
+## Search for available domains
+
+Instead of checking one domain at a time, search by keyword to get a list of available suggestions across TLDs.
+
+```bash
+curl -X POST https://api.dotlet.com/api/v1/registrar/search \
+  -H "X-API-Key: dlt_live_••••••••••••••••" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "acmewidgets",
+    "tlds": ["com", "io", "dev"],
+    "limit": 10
+  }'
+```
+
+The response lists each candidate domain with its availability and price:
+
+```json
+{
+  "query": "acmewidgets",
+  "suggestions": [
+    { "domain": "acmewidgets.com", "available": true, "price": "12.99", "currency": "USD" },
+    { "domain": "acmewidgets.io", "available": true, "price": "34.99", "currency": "USD" },
+    { "domain": "acmewidgets.dev", "available": false, "price": null, "currency": "USD" }
+  ]
+}
+```
+
+`tlds` is optional — omit it to search the registrar's default set of extensions.
+
+## Register the domain with DNS set up automatically
+
+When you purchase a domain, you can set `setup_dns` to `true` so Dotlet creates a DNS zone for it immediately, instead of requiring a separate setup call.
+
+```bash
+curl -X POST https://api.dotlet.com/api/v1/registrar/purchase \
+  -H "X-API-Key: dlt_live_••••••••••••••••" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "domain": "acmewidgets.com",
+    "years": 1,
+    "contact": {
+      "first_name": "Ada",
+      "last_name": "Lovelace",
+      "email": "ada@acmewidgets.com",
+      "phone": "+14155550100",
+      "address1": "123 Main St",
+      "city": "San Francisco",
+      "state": "CA",
+      "postal_code": "94105",
+      "country": "US"
+    },
+    "privacy": true,
+    "auto_renew": true,
+    "setup_dns": true,
+    "dns_provider": "cloudflare"
+  }'
+```
+
+The response includes a `dns_setup` object and a `status_url` you can poll while the zone is created and nameservers propagate:
+
+```json
+{
+  "success": true,
+  "domain": "acmewidgets.com",
+  "order_id": "8f14e45f-ceea-467e-bd6a-15e6e4f8c2f1",
+  "nameservers": [],
+  "dns_setup": { "status": "in_progress" },
+  "status_url": "/api/v1/registrar/domains/acmewidgets.com/dns-status"
+}
+```
+
+## Check DNS setup progress
+
+DNS setup happens asynchronously — creating a zone, updating nameservers at the registrar, and verifying delegation can take a few minutes. Poll the status endpoint until `status` reaches `completed`.
+
+```bash
+curl https://api.dotlet.com/api/v1/registrar/domains/acmewidgets.com/dns-status \
+  -H "X-API-Key: dlt_live_••••••••••••••••"
+```
+
+```json
+{
+  "domain": "acmewidgets.com",
+  "status": "in_progress",
+  "provider": "cloudflare",
+  "zone_id": "023e105f4ecef8ad9ca31a8372d0c353",
+  "nameservers": ["ns1.cloudflare.com", "ns2.cloudflare.com"],
+  "progress": {
+    "zone_created": true,
+    "ns_updated_at_registrar": true,
+    "ns_delegation_verified": false
+  }
+}
+```
+
+`ns_delegation_verified` flips to `true` once the new nameservers have propagated. Until then, the domain still resolves through its previous configuration.
+
+<Tip>
+  If you didn't set `setup_dns` during purchase, trigger it later with [`POST /registrar/domains/{domain}/setup-dns`](/api-reference/domains/setup-dns-for-domain) — it accepts the same `dns_provider` field.
+</Tip>
+
+## What didn't get covered here
+
+- **Manual nameserver control** — if you manage DNS with a provider other than the ones Dotlet integrates with, skip `setup_dns` and point nameservers yourself with [`PUT /registrar/domains/{domain}/nameservers`](/api-reference/domains/update-nameservers).
+- **Reviewing price before charging** — to show a customer a price and get their confirmation before billing, create an order with [`POST /registrar/order`](/api-reference/orders/create-order) instead of purchasing directly.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Manage DNS records" icon="server" href="/guides/manage-dns-records">
+    Add and edit individual DNS records once your zone exists.
+  </Card>
+  <Card title="Orders" icon="receipt" href="/api-reference/orders/create-order">
+    Reference for creating and tracking orders separately from a direct purchase.
+  </Card>
+</CardGroup>

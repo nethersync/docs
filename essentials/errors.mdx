@@ -1,0 +1,59 @@
+---
+title: "Errors"
+description: "How the Dotlet API reports errors, and how to handle them."
+---
+
+The Dotlet API uses standard HTTP status codes. `2xx` means the request succeeded, `4xx` means something about the request needs to change, and `5xx` means the problem is on Dotlet's side.
+
+| Status | Meaning |
+|---|---|
+| `200` | The request succeeded. |
+| `204` | The request succeeded and there's no response body — for example, after a delete. |
+| `401` | No credentials were sent, or they're invalid or expired. |
+| `403` | Credentials are valid but don't have access to this resource. |
+| `404` | The resource — domain, order, or DNS record — doesn't exist. |
+| `422` | The request body or parameters failed validation. |
+| `429` | You've exceeded the rate limit. Back off and retry. |
+| `5xx` | Something failed on Dotlet's side. Safe to retry with backoff. |
+
+## Validation errors
+
+A `422` response means the request body didn't match the expected shape — a missing required field, a value out of range, or the wrong type. The response lists every field that failed, not just the first one.
+
+```json
+{
+  "detail": [
+    {
+      "loc": ["body", "contact", "phone"],
+      "msg": "String should have at least 10 characters",
+      "type": "string_too_short"
+    },
+    {
+      "loc": ["body", "years"],
+      "msg": "Input should be less than or equal to 10",
+      "type": "less_than_equal"
+    }
+  ]
+}
+```
+
+`loc` is the path to the offending field, starting from where it appears in the request — `["body", "contact", "phone"]` means the `phone` field inside the `contact` object in the request body.
+
+## Action-specific errors
+
+Some endpoints return `200` with `success: false` and an `error_message` field instead of an HTTP error, because the request was well-formed but the underlying action — like a domain purchase or renewal — failed at the registrar. Always check `success` on these responses rather than only checking the HTTP status:
+
+```json
+{
+  "success": false,
+  "domain": "acmewidgets.com",
+  "order_id": "8f14e45f-ceea-467e-bd6a-15e6e4f8c2f1",
+  "error_message": "Insufficient funds in account"
+}
+```
+
+This applies to [`POST /registrar/purchase`](/api-reference/domains/purchase-domain) and [`POST /registrar/domains/{domain}/renew`](/api-reference/domains/renew-domain).
+
+## Retrying safely
+
+`GET` requests are always safe to retry. For `POST` requests that create something — orders, purchases, DNS records — retrying after a timeout can create a duplicate. If a purchase or order request times out, check [`GET /registrar/orders`](/api-reference/orders/list-orders) for an existing order before resubmitting.

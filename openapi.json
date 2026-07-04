@@ -1,0 +1,3342 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Dotlet API",
+    "description": "The Dotlet API lets you search, register, and manage domains, configure DNS records, and embed domain purchasing flows in your own product.\n\nAll endpoints are authenticated with an API key or bearer token, and all request and response bodies are JSON.",
+    "version": "0.1.1",
+    "contact": {
+      "name": "Dotlet Support",
+      "url": "https://dotlet.net/support",
+      "email": "support@dotlet.net"
+    }
+  },
+  "paths": {
+    "/api/v1/registrar/availability/{domain}": {
+      "get": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Check Domain Availability",
+        "description": "Check if a domain is available for registration.\n\nReturns availability status and pricing if available.",
+        "operationId": "check_domain_availability_api_v1_registrar_availability__domain__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain"
+            }
+          },
+          {
+            "name": "registrar",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "namecheap",
+              "title": "Registrar"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainAvailabilityResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registrar/price/{domain}": {
+      "get": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Get Domain Price",
+        "description": "Get pricing for a domain.\n\nReturns registration, renewal, and transfer prices.",
+        "operationId": "get_domain_price_api_v1_registrar_price__domain__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain"
+            }
+          },
+          {
+            "name": "years",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "Years"
+            }
+          },
+          {
+            "name": "registrar",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "namecheap",
+              "title": "Registrar"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainPriceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registrar/search": {
+      "post": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Search Domains",
+        "description": "Search for available domains based on a keyword.\n\nReturns a list of domain suggestions with availability and pricing.",
+        "operationId": "search_domains_api_v1_registrar_search_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "registrar",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "namecheap",
+              "title": "Registrar"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DomainSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainSearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registrar/order": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Create Order",
+        "description": "Create a domain order without immediate payment.\n\nThis endpoint validates domain availability, retrieves pricing from the\nregistrar provider, and creates a pending order. The organization can\nthen submit a manual payment and allocate it to the order.\n\nReturns order details including price, order_id, and payment instructions.",
+        "operationId": "create_order_api_v1_registrar_order_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DomainOrderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainOrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/registrar/orders": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "List Orders",
+        "description": "List all domain orders for the authenticated organization.\n\nSupports filtering by status and pagination. Returns order summaries\nincluding domain name, price, payment status, and order status.\n\nQuery Parameters:\n- page: Page number (1-indexed, default: 1)\n- page_size: Number of records per page (default: 10)\n- order_status: Filter by order status (pending, ready_to_process, processing, completed, failed, cancelled)",
+        "operationId": "list_orders_api_v1_registrar_orders_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "order_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Order Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedDomainOrderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registrar/orders/{order_id}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Get Order Details",
+        "description": "Get detailed information about a specific domain order.\n\nReturns full order details including contact information, registrar settings,\nDNS setup details, and payment status. Only returns orders belonging to the\nauthenticated organization.\n\nPath Parameters:\n- order_id: UUID of the domain order\n\nReturns 404 if the order doesn't exist or doesn't belong to the organization.",
+        "operationId": "get_order_details_api_v1_registrar_orders__order_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainOrderDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registrar/purchase": {
+      "post": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Purchase Domain",
+        "description": "Purchase a domain.\n\nThis is a billable action. Ensure you have sufficient funds in your account.\nThe domain will be registered with the provided contact information.",
+        "operationId": "purchase_domain_api_v1_registrar_purchase_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DomainPurchaseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainPurchaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/registrar/domains": {
+      "get": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "List Domains",
+        "description": "List all domains registered through the registrar account.",
+        "operationId": "list_domains_api_v1_registrar_domains_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "registrar",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "namecheap",
+              "title": "Registrar"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registrar/domains/{domain}": {
+      "get": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Get Domain Info",
+        "description": "Get detailed information about a specific domain.",
+        "operationId": "get_domain_info_api_v1_registrar_domains__domain__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain"
+            }
+          },
+          {
+            "name": "registrar",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "namecheap",
+              "title": "Registrar"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainInfoResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registrar/domains/{domain}/renew": {
+      "post": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Renew Domain",
+        "description": "Renew a domain registration.\n\nThis is a billable action.",
+        "operationId": "renew_domain_api_v1_registrar_domains__domain__renew_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain"
+            }
+          },
+          {
+            "name": "registrar",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "namecheap",
+              "title": "Registrar"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DomainRenewalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainRenewalResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registrar/domains/{domain}/nameservers": {
+      "put": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Update Nameservers",
+        "description": "Update nameservers for a domain.",
+        "operationId": "update_nameservers_api_v1_registrar_domains__domain__nameservers_put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain"
+            }
+          },
+          {
+            "name": "registrar",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "namecheap",
+              "title": "Registrar"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NameserverUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NameserverUpdateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registrar/domains/{domain}/auth-code": {
+      "get": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Get Auth Code",
+        "description": "Get the authorization code for domain transfer.\n\nThis will unlock the domain if it is currently locked.",
+        "operationId": "get_auth_code_api_v1_registrar_domains__domain__auth_code_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain"
+            }
+          },
+          {
+            "name": "registrar",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "namecheap",
+              "title": "Registrar"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthCodeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registrar/domains/{domain}/setup-dns": {
+      "post": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Setup Dns For Domain",
+        "description": "Manually trigger DNS setup for a purchased domain.\n\nIf DNS setup was not enabled during purchase, use this endpoint to set it up.\nReturns status and estimated completion time.",
+        "operationId": "setup_dns_for_domain_api_v1_registrar_domains__domain__setup_dns_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNSSetupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DNSSetupResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/registrar/domains/{domain}/dns-status": {
+      "get": {
+        "tags": [
+          "Domains"
+        ],
+        "summary": "Get Dns Setup Status",
+        "description": "Check DNS setup status for a purchased domain.\n\nReturns current setup status, zone ID, nameservers, and progress details.",
+        "operationId": "get_dns_setup_status_api_v1_registrar_domains__domain__dns_status_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DNSSetupStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dns/{domain_name}/records": {
+      "get": {
+        "tags": [
+          "DNS"
+        ],
+        "summary": "List Dns Records",
+        "description": "List DNS records for a domain.\n\nSupports both JWT (dashboard) and API key authentication.",
+        "operationId": "list_dns_records_api_v1_dns__domain_name__records_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          },
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain Name"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DNSRecordRead"
+                  },
+                  "title": "Response List Dns Records Api V1 Dns  Domain Name  Records Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "DNS"
+        ],
+        "summary": "Create Dns Record",
+        "description": "Create a new DNS record.",
+        "operationId": "create_dns_record_api_v1_dns__domain_name__records_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNSRecordCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DNSRecordRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dns/{domain_name}/records/{record_id}": {
+      "get": {
+        "tags": [
+          "DNS"
+        ],
+        "summary": "Get Dns Record",
+        "description": "Get a specific DNS record.",
+        "operationId": "get_dns_record_api_v1_dns__domain_name__records__record_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain Name"
+            }
+          },
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DNSRecordRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "DNS"
+        ],
+        "summary": "Update Dns Record",
+        "description": "Update a DNS record.",
+        "operationId": "update_dns_record_api_v1_dns__domain_name__records__record_id__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain Name"
+            }
+          },
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DNSRecordUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DNSRecordRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "DNS"
+        ],
+        "summary": "Delete Dns Record",
+        "description": "Delete a DNS record.",
+        "operationId": "delete_dns_record_api_v1_dns__domain_name__records__record_id__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain Name"
+            }
+          },
+          {
+            "name": "record_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Record Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dns/{domain_name}/sync": {
+      "post": {
+        "tags": [
+          "DNS"
+        ],
+        "summary": "Sync Dns Records",
+        "description": "Sync DNS records from the provider to the local database.",
+        "operationId": "sync_dns_records_api_v1_dns__domain_name__sync_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DNSRecordRead"
+                  },
+                  "title": "Response Sync Dns Records Api V1 Dns  Domain Name  Sync Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/hosted/sessions": {
+      "post": {
+        "tags": [
+          "Hosted Sessions"
+        ],
+        "summary": "Create Hosted Session",
+        "description": "Create a new hosted session for the organization associated with the API key.",
+        "operationId": "create_hosted_session_api_v1_hosted_sessions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HostedSessionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HostedSessionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthCodeResponse": {
+        "properties": {
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "auth_code": {
+            "type": "string",
+            "title": "Auth Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "Keep this code secure. It is required to transfer the domain."
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "auth_code"
+        ],
+        "title": "AuthCodeResponse",
+        "description": "Response containing domain auth code"
+      },
+      "BankDetails": {
+        "properties": {
+          "bank_name": {
+            "type": "string",
+            "title": "Bank Name"
+          },
+          "account_name": {
+            "type": "string",
+            "title": "Account Name"
+          },
+          "account_number": {
+            "type": "string",
+            "title": "Account Number"
+          },
+          "routing_number": {
+            "type": "string",
+            "title": "Routing Number"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bank_name",
+          "account_name",
+          "account_number",
+          "routing_number"
+        ],
+        "title": "BankDetails"
+      },
+      "DNSRecordCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Full record name (e.g., api.example.com)"
+          },
+          "record_type": {
+            "$ref": "#/components/schemas/app__providers__dns__dns_base__RecordType"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Record content (e.g., IP address)"
+          },
+          "ttl": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ttl",
+            "description": "Time to live in seconds",
+            "default": 300
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority",
+            "description": "Priority for MX/SRV records"
+          },
+          "proxied": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proxied",
+            "description": "Whether the record is proxied (Cloudflare only)",
+            "default": false
+          },
+          "domain_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Domain Id",
+            "description": "ID of the domain"
+          },
+          "lease_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lease Id",
+            "description": "ID of the lease (optional)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "record_type",
+          "content"
+        ],
+        "title": "DNSRecordCreate"
+      },
+      "DNSRecordRead": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Full record name (e.g., api.example.com)"
+          },
+          "record_type": {
+            "$ref": "#/components/schemas/RecordType-Output"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Record content (e.g., IP address)"
+          },
+          "ttl": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ttl",
+            "description": "Time to live in seconds",
+            "default": 300
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority",
+            "description": "Priority for MX/SRV records"
+          },
+          "proxied": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proxied",
+            "description": "Whether the record is proxied (Cloudflare only)",
+            "default": false
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "domain_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Domain Id"
+          },
+          "lease_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lease Id"
+          },
+          "provider_record_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Record Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "record_type",
+          "content",
+          "id",
+          "domain_id",
+          "created_at"
+        ],
+        "title": "DNSRecordRead"
+      },
+      "DNSRecordUpdate": {
+        "properties": {
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          },
+          "ttl": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ttl"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "proxied": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proxied"
+          }
+        },
+        "type": "object",
+        "title": "DNSRecordUpdate"
+      },
+      "DNSSetupProgressResponse": {
+        "properties": {
+          "zone_created": {
+            "type": "boolean",
+            "title": "Zone Created",
+            "default": false
+          },
+          "ns_updated_at_registrar": {
+            "type": "boolean",
+            "title": "Ns Updated At Registrar",
+            "default": false
+          },
+          "ns_delegation_verified": {
+            "type": "boolean",
+            "title": "Ns Delegation Verified",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "DNSSetupProgressResponse",
+        "description": "DNS setup progress details"
+      },
+      "DNSSetupRequest": {
+        "properties": {
+          "dns_provider": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Dns Provider",
+            "default": "cloudflare"
+          }
+        },
+        "type": "object",
+        "title": "DNSSetupRequest",
+        "description": "Request to setup DNS for a purchased domain"
+      },
+      "DNSSetupResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "zone_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone Id"
+          },
+          "nameservers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Nameservers",
+            "default": []
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DNSSetupProgressResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dns_api_ready": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dns Api Ready"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "estimated_completion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Completion"
+          },
+          "status_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Url"
+          },
+          "dns_endpoints": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dns Endpoints"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "status"
+        ],
+        "title": "DNSSetupResponse",
+        "description": "Response from DNS setup request"
+      },
+      "DNSSetupStatusResponse": {
+        "properties": {
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "zone_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone Id"
+          },
+          "nameservers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Nameservers",
+            "default": []
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DNSSetupProgressResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dns_api_ready": {
+            "type": "boolean",
+            "title": "Dns Api Ready",
+            "default": false
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "dns_endpoints": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dns Endpoints"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "status"
+        ],
+        "title": "DNSSetupStatusResponse",
+        "description": "Response for DNS setup status check"
+      },
+      "DomainAvailabilityResponse": {
+        "properties": {
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DomainStatus"
+          },
+          "premium": {
+            "type": "boolean",
+            "title": "Premium",
+            "default": false
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "USD"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "available",
+          "status"
+        ],
+        "title": "DomainAvailabilityResponse",
+        "description": "Response for domain availability check"
+      },
+      "DomainInfoResponse": {
+        "properties": {
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RegistrationStatus"
+          },
+          "registration_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registration Date"
+          },
+          "expiry_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expiry Date"
+          },
+          "nameservers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Nameservers",
+            "default": []
+          },
+          "auto_renew": {
+            "type": "boolean",
+            "title": "Auto Renew",
+            "default": false
+          },
+          "locked": {
+            "type": "boolean",
+            "title": "Locked",
+            "default": false
+          },
+          "privacy_enabled": {
+            "type": "boolean",
+            "title": "Privacy Enabled",
+            "default": false
+          },
+          "registrar_domain_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registrar Domain Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "status"
+        ],
+        "title": "DomainInfoResponse",
+        "description": "Detailed domain information"
+      },
+      "DomainListResponse": {
+        "properties": {
+          "domains": {
+            "items": {
+              "$ref": "#/components/schemas/DomainInfoResponse"
+            },
+            "type": "array",
+            "title": "Domains"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domains",
+          "total"
+        ],
+        "title": "DomainListResponse",
+        "description": "List of domains"
+      },
+      "DomainOrderDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Organization Id"
+          },
+          "domain_name": {
+            "type": "string",
+            "title": "Domain Name"
+          },
+          "registrar": {
+            "type": "string",
+            "title": "Registrar"
+          },
+          "years": {
+            "type": "integer",
+            "title": "Years"
+          },
+          "price": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Price"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "amount_paid": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Amount Paid"
+          },
+          "amount_due": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Amount Due"
+          },
+          "fully_paid": {
+            "type": "boolean",
+            "title": "Fully Paid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DomainOrderStatus"
+          },
+          "registrar_order_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registrar Order Id"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "contact_info": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Info"
+          },
+          "nameservers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameservers"
+          },
+          "privacy": {
+            "type": "boolean",
+            "title": "Privacy",
+            "default": true
+          },
+          "auto_renew": {
+            "type": "boolean",
+            "title": "Auto Renew",
+            "default": true
+          },
+          "dns_setup_requested": {
+            "type": "boolean",
+            "title": "Dns Setup Requested"
+          },
+          "dns_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dns Provider"
+          },
+          "dns_setup_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dns Setup Status"
+          },
+          "dns_zone_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dns Zone Id"
+          },
+          "dns_nameservers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dns Nameservers"
+          },
+          "dns_setup_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dns Setup Error"
+          },
+          "dns_setup_started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dns Setup Started At"
+          },
+          "dns_setup_completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dns Setup Completed At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "payment_allocations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Payment Allocations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "domain_name",
+          "registrar",
+          "years",
+          "price",
+          "currency",
+          "amount_paid",
+          "amount_due",
+          "fully_paid",
+          "status",
+          "dns_setup_requested",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "DomainOrderDetail",
+        "description": "Detailed domain order information including payment history"
+      },
+      "DomainOrderRequest": {
+        "properties": {
+          "domain": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Domain"
+          },
+          "years": {
+            "type": "integer",
+            "maximum": 10,
+            "minimum": 1,
+            "title": "Years",
+            "default": 1
+          },
+          "contact": {
+            "$ref": "#/components/schemas/RegistrantContactSchema"
+          },
+          "payment_method": {
+            "type": "string",
+            "enum": [
+              "wire",
+              "card"
+            ],
+            "title": "Payment Method",
+            "description": "Payment method: 'wire' or 'card'",
+            "default": "card"
+          },
+          "nameservers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameservers"
+          },
+          "privacy": {
+            "type": "boolean",
+            "title": "Privacy",
+            "default": true
+          },
+          "auto_renew": {
+            "type": "boolean",
+            "title": "Auto Renew",
+            "default": true
+          },
+          "registrar": {
+            "type": "string",
+            "title": "Registrar",
+            "description": "Registrar to use (currently only namecheap is supported)",
+            "default": "namecheap"
+          },
+          "setup_dns": {
+            "type": "boolean",
+            "title": "Setup Dns",
+            "description": "Automatically setup DNS after purchase",
+            "default": false
+          },
+          "dns_provider": {
+            "type": "string",
+            "title": "Dns Provider",
+            "description": "DNS provider to use for setup",
+            "default": "cloudflare"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "contact"
+        ],
+        "title": "DomainOrderRequest",
+        "description": "Request to create a domain order (without immediate payment)"
+      },
+      "DomainOrderResponse": {
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "domain_name": {
+            "type": "string",
+            "title": "Domain Name"
+          },
+          "years": {
+            "type": "integer",
+            "title": "Years"
+          },
+          "price": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Price"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DomainOrderStatus"
+          },
+          "checkout_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkout Url"
+          },
+          "banking_details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BankDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_id",
+          "domain_name",
+          "years",
+          "price",
+          "currency",
+          "status"
+        ],
+        "title": "DomainOrderResponse",
+        "description": "Response for domain order with payment status"
+      },
+      "DomainOrderStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "ready_to_process",
+          "price_changed",
+          "processing",
+          "completed",
+          "failed",
+          "cancelled",
+          "refunded"
+        ],
+        "title": "DomainOrderStatus"
+      },
+      "DomainOrderSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "domain_name": {
+            "type": "string",
+            "title": "Domain Name"
+          },
+          "price": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Price"
+          },
+          "amount_paid": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Amount Paid"
+          },
+          "amount_due": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Amount Due"
+          },
+          "fully_paid": {
+            "type": "boolean",
+            "title": "Fully Paid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DomainOrderStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "domain_name",
+          "price",
+          "amount_paid",
+          "amount_due",
+          "fully_paid",
+          "status",
+          "created_at"
+        ],
+        "title": "DomainOrderSummary",
+        "description": "Summary of a domain order for list views"
+      },
+      "DomainPriceResponse": {
+        "properties": {
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "registration_price": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Registration Price"
+          },
+          "renewal_price": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Renewal Price"
+          },
+          "transfer_price": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transfer Price"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "USD"
+          },
+          "years": {
+            "type": "integer",
+            "title": "Years"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "registration_price",
+          "renewal_price",
+          "years"
+        ],
+        "title": "DomainPriceResponse",
+        "description": "Response for domain pricing"
+      },
+      "DomainPurchaseRequest": {
+        "properties": {
+          "domain": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Domain"
+          },
+          "years": {
+            "type": "integer",
+            "maximum": 10,
+            "minimum": 1,
+            "title": "Years",
+            "default": 1
+          },
+          "contact": {
+            "$ref": "#/components/schemas/RegistrantContactSchema"
+          },
+          "nameservers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameservers"
+          },
+          "privacy": {
+            "type": "boolean",
+            "title": "Privacy",
+            "default": true
+          },
+          "auto_renew": {
+            "type": "boolean",
+            "title": "Auto Renew",
+            "default": true
+          },
+          "registrar": {
+            "type": "string",
+            "title": "Registrar",
+            "description": "Registrar to use (currently only namecheap is supported)",
+            "default": "namecheap"
+          },
+          "setup_dns": {
+            "type": "boolean",
+            "title": "Setup Dns",
+            "description": "Automatically setup DNS after purchase",
+            "default": false
+          },
+          "dns_provider": {
+            "type": "string",
+            "title": "Dns Provider",
+            "description": "DNS provider to use for setup",
+            "default": "cloudflare"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "contact"
+        ],
+        "title": "DomainPurchaseRequest",
+        "description": "Request to purchase a domain"
+      },
+      "DomainPurchaseResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "order_id": {
+            "type": "string",
+            "title": "Order Id"
+          },
+          "registrar_order_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registrar Order Id"
+          },
+          "registration_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registration Date"
+          },
+          "expiry_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expiry Date"
+          },
+          "nameservers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Nameservers",
+            "default": []
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "dns_setup": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dns Setup"
+          },
+          "status_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "domain",
+          "order_id"
+        ],
+        "title": "DomainPurchaseResponse",
+        "description": "Response for domain purchase"
+      },
+      "DomainRenewalRequest": {
+        "properties": {
+          "years": {
+            "type": "integer",
+            "maximum": 10,
+            "minimum": 1,
+            "title": "Years",
+            "default": 1
+          }
+        },
+        "type": "object",
+        "title": "DomainRenewalRequest",
+        "description": "Request to renew a domain"
+      },
+      "DomainRenewalResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "new_expiry_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Expiry Date"
+          },
+          "years_renewed": {
+            "type": "integer",
+            "title": "Years Renewed",
+            "default": 1
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "domain"
+        ],
+        "title": "DomainRenewalResponse",
+        "description": "Response for domain renewal"
+      },
+      "DomainSearchRequest": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Query"
+          },
+          "tlds": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tlds"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 50,
+            "minimum": 1,
+            "title": "Limit",
+            "default": 10
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "DomainSearchRequest",
+        "description": "Request to search for domains"
+      },
+      "DomainSearchResponse": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "suggestions": {
+            "items": {
+              "$ref": "#/components/schemas/DomainSuggestionResponse"
+            },
+            "type": "array",
+            "title": "Suggestions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "suggestions"
+        ],
+        "title": "DomainSearchResponse",
+        "description": "Response for domain search"
+      },
+      "DomainStatus": {
+        "type": "string",
+        "enum": [
+          "available",
+          "unavailable",
+          "premium",
+          "reserved",
+          "unknown"
+        ],
+        "title": "DomainStatus"
+      },
+      "DomainSuggestionResponse": {
+        "properties": {
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "USD"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain",
+          "available"
+        ],
+        "title": "DomainSuggestionResponse",
+        "description": "Domain suggestion"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HostedAction": {
+        "type": "string",
+        "enum": [
+          "domain_search",
+          "domain_purchase",
+          "dns_manage",
+          "renew"
+        ],
+        "title": "HostedAction"
+      },
+      "HostedSessionCreate": {
+        "properties": {
+          "allowed_actions": {
+            "items": {
+              "$ref": "#/components/schemas/HostedAction"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Allowed Actions"
+          },
+          "external_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External User Id"
+          },
+          "external_account_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Account Id"
+          },
+          "theme_config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ThemeConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
+          },
+          "expires_in_minutes": {
+            "type": "integer",
+            "maximum": 1440,
+            "minimum": 5,
+            "title": "Expires In Minutes",
+            "default": 60
+          }
+        },
+        "type": "object",
+        "required": [
+          "allowed_actions"
+        ],
+        "title": "HostedSessionCreate"
+      },
+      "HostedSessionResponse": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Session Id"
+          },
+          "hosted_url": {
+            "type": "string",
+            "maxLength": 2083,
+            "minLength": 1,
+            "format": "uri",
+            "title": "Hosted Url"
+          },
+          "embed_url": {
+            "type": "string",
+            "maxLength": 2083,
+            "minLength": 1,
+            "format": "uri",
+            "title": "Embed Url"
+          },
+          "client_token": {
+            "type": "string",
+            "title": "Client Token"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "hosted_url",
+          "embed_url",
+          "client_token",
+          "expires_at"
+        ],
+        "title": "HostedSessionResponse"
+      },
+      "NameserverUpdateRequest": {
+        "properties": {
+          "nameservers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 13,
+            "minItems": 2,
+            "title": "Nameservers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nameservers"
+        ],
+        "title": "NameserverUpdateRequest",
+        "description": "Request to update nameservers"
+      },
+      "NameserverUpdateResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "nameservers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Nameservers"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "domain",
+          "nameservers"
+        ],
+        "title": "NameserverUpdateResponse",
+        "description": "Response for nameserver update"
+      },
+      "PaginatedDomainOrderResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DomainOrderSummary"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "PaginatedDomainOrderResponse",
+        "description": "Paginated list of domain orders"
+      },
+      "RecordType-Output": {
+        "type": "string",
+        "enum": [
+          "A",
+          "AAAA",
+          "CNAME",
+          "MX",
+          "TXT",
+          "NS",
+          "SRV",
+          "CAA"
+        ],
+        "title": "RecordType"
+      },
+      "RegistrantContactSchema": {
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "First Name"
+          },
+          "last_name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Last Name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 10,
+            "title": "Phone"
+          },
+          "address1": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Address1"
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "City"
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "State"
+          },
+          "postal_code": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Postal Code"
+          },
+          "country": {
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 2,
+            "title": "Country"
+          },
+          "organization": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Organization"
+          },
+          "address2": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address2"
+          }
+        },
+        "type": "object",
+        "required": [
+          "first_name",
+          "last_name",
+          "email",
+          "phone",
+          "address1",
+          "city",
+          "state",
+          "postal_code",
+          "country"
+        ],
+        "title": "RegistrantContactSchema",
+        "description": "Contact information for domain registration"
+      },
+      "RegistrationStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "expired",
+          "pending",
+          "locked",
+          "suspended"
+        ],
+        "title": "RegistrationStatus"
+      },
+      "ThemeConfig": {
+        "properties": {
+          "primary_color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Color"
+          },
+          "logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Url"
+          },
+          "brand_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand Name"
+          }
+        },
+        "type": "object",
+        "title": "ThemeConfig"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "app__providers__dns__dns_base__RecordType": {
+        "type": "string",
+        "enum": [
+          "A",
+          "AAAA",
+          "CNAME",
+          "MX",
+          "TXT",
+          "NS",
+          "SRV",
+          "CAA"
+        ],
+        "title": "RecordType"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/api/token"
+          }
+        }
+      },
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "APIKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.dotlet.net",
+      "description": "Production"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Domains",
+      "description": "Search, price, register, renew, and manage domains."
+    },
+    {
+      "name": "Orders",
+      "description": "Create and track domain orders separately from immediate purchases."
+    },
+    {
+      "name": "DNS",
+      "description": "Manage DNS records for domains hosted with Dotlet."
+    },
+    {
+      "name": "Hosted Sessions",
+      "description": "Create embeddable, scoped sessions for end users in your own product."
+    }
+  ]
+}
