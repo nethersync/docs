@@ -18,7 +18,7 @@ Send a `GET` request with the domain you want, in the path.
 
 ```bash
 curl https://api.dotlet.com/api/v1/registrar/availability/example.com \
-  -H "X-API-Key: dlt_live_••••••••••••••••"
+  -H "X-API-Key: dk_••••••••••••••••"
 ```
 
 A domain that's free to register returns `available: true`:
@@ -42,7 +42,7 @@ Once you've found an available domain, register it with a single `POST` request.
 
 ```bash
 curl -X POST https://api.dotlet.com/api/v1/registrar/purchase \
-  -H "X-API-Key: dlt_live_••••••••••••••••" \
+  -H "X-API-Key: dk_••••••••••••••••" \
   -H "Content-Type: application/json" \
   -d '{
     "domain": "example.com",
@@ -86,7 +86,7 @@ List your registered domains to confirm the purchase went through.
 
 ```bash
 curl https://api.dotlet.com/api/v1/registrar/domains \
-  -H "X-API-Key: dlt_live_••••••••••••••••"
+  -H "X-API-Key: dk_••••••••••••••••"
 ```
 
 `example.com` should now appear in the response with a `registration_status` of `active`.

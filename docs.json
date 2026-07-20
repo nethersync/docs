@@ -30,10 +30,10 @@
             ]
           },
           {
-            "group": "Essentials",
+            "group": "Integration Paths",
             "pages": [
-              "essentials/errors",
-              "essentials/pagination"
+              "integration-paths/direct-integration",
+              "integration-paths/hosted-checkout"
             ]
           }
         ]
@@ -87,6 +87,14 @@
             "pages": [
               "api-reference/hosted-sessions/create-hosted-session"
             ]
+          },
+          {
+            "group": "Origin Rules",
+            "pages": [
+              "api-reference/origin-rules/create-origin-rule",
+              "api-reference/origin-rules/enable-origin-rule",
+              "api-reference/origin-rules/disable-origin-rule"
+            ]
           }
         ]
       }
@@ -111,7 +119,12 @@
   },
   "api": {
     "examples": {
-      "languages": ["curl", "javascript", "python", "go"]
+      "languages": [
+        "curl",
+        "javascript",
+        "python",
+        "go"
+      ]
     }
   },
   "contextual": {

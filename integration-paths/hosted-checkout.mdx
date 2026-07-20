@@ -1,0 +1,192 @@
+---
+title: "Hosted checkout"
+description: "Add one backend endpoint and an iframe to let customers manage domains without leaving your product — Dotlet builds and hosts the UI."
+---
+
+Hosted checkout is the fastest way to offer domain search, purchase, and management inside your product. You add one backend endpoint that creates a session, and one iframe on the frontend that loads Dotlet's hosted UI. Dotlet builds, hosts, and updates the actual search/purchase/DNS screens — you don't build any of that UI yourself.
+
+Choose this path if you want customers managing domains as soon as possible, and don't need to control the exact look and feel of every screen beyond basic theming (logo, brand name, primary color).
+
+<Tip>
+  Prefer to own the UI pixel-for-pixel, or build a flow that doesn't look like an iframe at all? See [Direct integration](/integration-path/direct-integration) instead.
+</Tip>
+
+## How it works
+
+1. Your frontend asks **your own backend** to start a domain session (never call Dotlet directly from the browser — that would expose your API key).
+2. Your backend calls `POST /api/v1/hosted/sessions` with your Dotlet API key and gets back an `embed_url`.
+3. Your frontend renders that `embed_url` in an iframe.
+4. The iframe posts `window.postMessage` events back to your page as the customer moves through the flow, so you know when to resize, close, or show a success state.
+
+A full reference implementation (Next.js) is available at [nethersync/dotlet-widget-demo](https://github.com/nethersync/dotlet-widget-demo) — the code below is adapted from it.
+
+## Step 1: Create a backend endpoint
+
+Add one route to your backend that calls Dotlet's session endpoint. Your Dotlet API key stays server-side and is never sent to the browser.
+
+```ts
+// app/api/create-domain-session/route.ts
+import { NextResponse } from 'next/server';
+
+export async function POST(request: Request) {
+  const { userId, accountId } = await request.json();
+
+  const response = await fetch('https://api.dotlet.net/api/v1/hosted/sessions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': process.env.DOTLET_API_KEY!,
+    },
+    body: JSON.stringify({
+      external_user_id: userId,
+      external_account_id: accountId,
+      allowed_actions: ['domain_search', 'domain_purchase', 'dns_manage', 'renew'],
+      theme_config: {
+        brand_name: 'Your Product',
+        primary_color: '#111827',
+        logo_url: 'https://yourapp.com/logo.svg',
+      },
+      expires_in_minutes: 60,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return NextResponse.json({ error: 'Failed to create session', details: data }, { status: response.status });
+  }
+
+  return NextResponse.json(data);
+}
+```
+
+<Info>
+  This example is Next.js, matching the reference repo. The pattern is the same in any backend — one server-side route that calls `POST /api/v1/hosted/sessions` with your API key and forwards the JSON response to your frontend. **Fill in:** an equivalent snippet for your own stack if it isn't Node/Next.js.
+</Info>
+
+`external_user_id` and `external_account_id` are optional but recommended — they let you correlate anything the customer does in the session (a purchase, a DNS change) back to your own user and account records. `allowed_actions` scopes what the session can do; see the table below.
+
+| Action | Allows |
+|---|---|
+| `domain_search` | Searching for and viewing availability of domains |
+| `domain_purchase` | Completing a domain purchase |
+| `dns_manage` | Creating and editing DNS records for domains the customer owns |
+| `renew` | Renewing a domain before it expires |
+
+The response looks like:
+
+```json
+{
+  "session_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "hosted_url": "https://checkout.dotlet.net/s/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "embed_url": "https://checkout.dotlet.net/embed/3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "client_token": "cst_live_a1b2c3d4e5f6",
+  "expires_at": "2026-07-14T15:00:00Z"
+}
+```
+
+<Warning>
+  **Fill in:** confirm the `checkout.dotlet.net` host above — it's inferred from the field name (`embed_url`), not stated anywhere in the spec or demo repo. Verify against a real response before publishing.
+</Warning>
+
+## Step 2: Embed the iframe on your frontend
+
+Call your backend route, then render the returned `embed_url` in an iframe.
+
+```tsx
+const startCheckout = async () => {
+  const response = await fetch('/api/create-domain-session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: 'user_123', accountId: 'workspace_456' }),
+  });
+
+  const data = await response.json();
+  setEmbedUrl(data.embed_url);
+};
+```
+
+```tsx
+<iframe
+  src={embedUrl}
+  style={{ width: '100%', height: iframeHeight, border: 0 }}
+  allow="payment"
+  loading="lazy"
+  title="Dotlet Domain Checkout"
+/>
+```
+
+## Step 3: Listen for events from the iframe
+
+The hosted UI communicates back to your page with `window.postMessage`. Listen for these events to resize the iframe, close it, or show your own success state:
+
+```tsx
+useEffect(() => {
+  const handleMessage = (event: MessageEvent) => {
+    const data = event.data;
+    if (!data || data.source !== 'dotlet-checkout') return;
+
+    switch (data.type) {
+      case 'ready':
+        // Widget finished loading
+        break;
+      case 'resize':
+        setIframeHeight(typeof data.height === 'number' ? `${data.height}px` : data.height);
+        break;
+      case 'success':
+        // data.orderId is available here
+        setEmbedUrl(null);
+        break;
+      case 'cancel':
+        setEmbedUrl(null);
+        break;
+      case 'error':
+        setError(data.message);
+        setEmbedUrl(null);
+        break;
+    }
+  };
+
+  window.addEventListener('message', handleMessage);
+  return () => window.removeEventListener('message', handleMessage);
+}, []);
+```
+
+| Event `type` | Fires when | Payload |
+|---|---|---|
+| `ready` | The hosted UI has finished loading inside the iframe | — |
+| `resize` | The hosted UI's content height changes | `height` (number or CSS string) |
+| `success` | The customer completes the flow (e.g. a purchase) | `orderId` |
+| `cancel` | The customer closes or cancels the flow | — |
+| `error` | Something failed inside the hosted UI | `message` |
+
+<Warning>
+  The reference implementation checks `data.source === 'dotlet-checkout'` but doesn't verify `event.origin` (its code comments this out with "In production, we'd verify event.origin"). **Fill in:** the real origin to check against (e.g. `https://checkout.dotlet.net`) so a page on another domain can't spoof these messages — this is a production security requirement, not optional.
+</Warning>
+
+## Theming
+
+`theme_config` on the session request controls how the hosted UI is branded:
+
+| Field | Type | Description |
+|---|---|---|
+| `brand_name` | string | Shown in the hosted UI's header |
+| `primary_color` | string | Hex color used for buttons and accents |
+| `logo_url` | string | Your logo, shown instead of Dotlet's |
+
+All three fields are optional. You can also pass a `metadata` object (any JSON) on the session request if you want to attach your own data to the session — it isn't used by Dotlet, only stored against the session.
+
+## Session expiry
+
+Sessions expire after `expires_in_minutes` (5–1440, default 60). Create a new session each time a customer opens the checkout flow rather than reusing one across visits.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Direct integration" icon="code" href="/integration-path/direct-integration">
+    Build your own UI on top of the raw domain and DNS endpoints instead.
+  </Card>
+  <Card title="Hosted Sessions API reference" icon="window" href="/api-reference/hosted-sessions/create-hosted-session">
+    Full request and response schema for the session endpoint.
+  </Card>
+</CardGroup>

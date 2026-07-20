@@ -11,7 +11,7 @@ Instead of checking one domain at a time, search by keyword to get a list of ava
 
 ```bash
 curl -X POST https://api.dotlet.com/api/v1/registrar/search \
-  -H "X-API-Key: dlt_live_••••••••••••••••" \
+  -H "X-API-Key: dk_••••••••••••••••" \
   -H "Content-Type: application/json" \
   -d '{
     "query": "acmewidgets",
@@ -41,7 +41,7 @@ When you purchase a domain, you can set `setup_dns` to `true` so Dotlet creates 
 
 ```bash
 curl -X POST https://api.dotlet.com/api/v1/registrar/purchase \
-  -H "X-API-Key: dlt_live_••••••••••••••••" \
+  -H "X-API-Key: dk_••••••••••••••••" \
   -H "Content-Type: application/json" \
   -d '{
     "domain": "acmewidgets.com",
@@ -83,7 +83,7 @@ DNS setup happens asynchronously — creating a zone, updating nameservers at th
 
 ```bash
 curl https://api.dotlet.com/api/v1/registrar/domains/acmewidgets.com/dns-status \
-  -H "X-API-Key: dlt_live_••••••••••••••••"
+  -H "X-API-Key: dk_••••••••••••••••"
 ```
 
 ```json

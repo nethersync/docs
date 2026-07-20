@@ -1,0 +1,134 @@
+---
+title: "Direct integration"
+description: "Build your own domain search, purchase, and DNS management UI on top of the Dotlet API."
+---
+
+Direct integration means you build the UI — search results, purchase forms, DNS record tables — and call Dotlet's API from your backend to power it. You have full control over every screen; Dotlet just handles the registrar, DNS, and routing work behind it.
+
+Choose this path if you need the domain flow to look and behave exactly like the rest of your product, or if you need to fold it into an existing multi-step onboarding flow rather than dropping in a separate screen.
+
+<Tip>
+  Want something working today with minimal UI work? See [Hosted checkout](/integration-path/hosted-checkout) instead — one backend endpoint plus an iframe, and Dotlet's hosted UI does the rest.
+</Tip>
+
+## What you build vs. what Dotlet handles
+
+| You build | Dotlet handles |
+|---|---|
+| Search input and results UI | Availability checks and pricing against the registrar |
+| Purchase form (contact details, plan selection) | Registration, billing with the registrar, renewals |
+| DNS record editor | Creating, validating, and syncing DNS records |
+| Domain-to-customer mapping in your own database | Routing traffic for a customer's domain to your platform (origin rules) |
+
+All calls in this guide go through your backend — never call these endpoints from the browser, since they require your Dotlet API key.
+
+## 1. Search and check availability
+
+Search by keyword to show a list of suggestions, or check one exact domain.
+
+```bash
+curl -X POST https://api.dotlet.net/api/v1/registrar/search \
+  -H "X-API-Key: dk_••••••••••••••••" \
+  -H "Content-Type: application/json" \
+  -d '{ "query": "acmewidgets", "tlds": ["com", "io", "dev"], "limit": 10 }'
+```
+
+```json
+{
+  "query": "acmewidgets",
+  "suggestions": [
+    { "domain": "acmewidgets.com", "available": true, "price": "12.99", "currency": "USD" },
+    { "domain": "acmewidgets.io", "available": true, "price": "34.99", "currency": "USD" }
+  ]
+}
+```
+
+```bash
+curl https://api.dotlet.net/api/v1/registrar/availability/acmewidgets.com \
+  -H "X-API-Key: dk_••••••••••••••••"
+```
+
+## 2. Register the domain
+
+Collect registrant contact details in your own form, then submit the purchase.
+
+```bash
+curl -X POST https://api.dotlet.net/api/v1/registrar/purchase \
+  -H "X-API-Key: dk_••••••••••••••••" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "domain": "acmewidgets.com",
+    "years": 1,
+    "contact": {
+      "first_name": "Ada",
+      "last_name": "Lovelace",
+      "email": "ada@acmewidgets.com",
+      "phone": "+14155550100",
+      "address1": "123 Main St",
+      "city": "San Francisco",
+      "state": "CA",
+      "postal_code": "94105",
+      "country": "US"
+    },
+    "privacy": true,
+    "auto_renew": true
+  }'
+```
+
+Check `success` on the response before treating the purchase as complete — a `200` with `success: false` means the request was valid but the registrar-side action failed (for example, insufficient funds). See [Errors](/essentials/errors) for this pattern.
+
+## 3. Store the mapping to your own customer
+
+Dotlet doesn't know which of your customers a domain belongs to — that mapping lives in your own database. When a purchase succeeds, store the `domain` and `order_id` from the response against the customer or account record that requested it.
+
+## 4. Route the domain to your platform
+
+Once a customer owns a domain, you need traffic for it to reach your platform — this is what an **origin rule** does. This is the one part of direct integration where the spec has gaps I can't fill in from the current `openapi.json`:
+
+<Warning>
+  `OriginRuleCreateRequest` and `OriginRuleResponse` are referenced by the origin-rule endpoints but aren't defined anywhere in the spec's `components/schemas` — so the actual request/response fields (what you set as the origin: an IP? a hostname? a customer identifier?) aren't documented. **Fill in:** the real field list once you have it, ideally by regenerating `openapi.json` from a build where those schemas are present.
+
+  Separately, `POST /domains/{domain_id}/origin-rules` takes a `domain_id` (UUID) in the path, but none of the registrar responses (`DomainInfoResponse`, `DomainPurchaseResponse`, `DomainListResponse`) expose a `domain_id` field — only a `registrar_domain_id` string, which may or may not be the same value. **Fill in:** confirm where a caller is meant to get this UUID from.
+</Warning>
+
+Once those are confirmed, the shape of this step will be:
+
+```bash
+curl -X POST https://api.dotlet.net/api/v1/domains/{domain_id}/origin-rules \
+  -H "X-API-Key: dk_••••••••••••••••" \
+  -H "Content-Type: application/json" \
+  -d '{ }'
+```
+
+```bash
+curl -X POST https://api.dotlet.net/api/v1/domains/origin-rules/{origin_rule_id}/enable \
+  -H "X-API-Key: dk_••••••••••••••••"
+```
+
+## 5. Manage DNS records
+
+For anything beyond the origin rule — custom subdomains, MX records for customer email, TXT records for verification — manage DNS records directly.
+
+<Note>
+  These endpoints require a bearer token rather than an API key. See [Authentication](/authentication).
+</Note>
+
+```bash
+curl -X POST https://api.dotlet.net/api/v1/registrar/dns/acmewidgets.com/records \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "acmewidgets.com", "record_type": "A", "content": "203.0.113.10", "ttl": 300 }'
+```
+
+See [Manage DNS records](/guides/manage-dns-records) for the full create/update/delete/sync flow.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Hosted checkout" icon="window" href="/integration-path/hosted-checkout">
+    Compare against the lower-effort iframe-based path.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/introduction">
+    Full parameter and response details for every endpoint used above.
+  </Card>
+</CardGroup>
