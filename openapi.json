@@ -863,7 +863,7 @@
         }
       }
     },
-    "/api/v1/dns/{domain_name}/records": {
+    "/api/v1/registrar/dns/{domain_name}/records": {
       "get": {
         "tags": [
           "DNS"
@@ -994,7 +994,7 @@
         }
       }
     },
-    "/api/v1/dns/{domain_name}/records/{record_id}": {
+    "/api/v1/registrar/dns/{domain_name}/records/{record_id}": {
       "get": {
         "tags": [
           "DNS"
@@ -1167,7 +1167,7 @@
         }
       }
     },
-    "/api/v1/dns/{domain_name}/sync": {
+    "/api/v1/registrar/dns/{domain_name}/sync": {
       "post": {
         "tags": [
           "DNS"
@@ -1267,6 +1267,160 @@
             "HTTPBearer": []
           }
         ]
+      }
+    },
+     "/api/v1/domains/{domain_id}/origin-rules": {
+      "post": {
+        "summary": "Create Origin Rule",
+        "operationId": "create_origin_rule_api_v1_domains__domain_id__origin_rules_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          },
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Domain Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OriginRuleCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OriginRuleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/domains/origin-rules/{origin_rule_id}/enable": {
+      "post": {
+        "summary": "Enable Origin Rule",
+        "operationId": "enable_origin_rule_api_v1_domains_origin_rules__origin_rule_id__enable_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          },
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "origin_rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Origin Rule Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OriginRuleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/domains/origin-rules/{origin_rule_id}/disable": {
+      "post": {
+        "summary": "Disable Origin Rule",
+        "operationId": "disable_origin_rule_api_v1_domains_origin_rules__origin_rule_id__disable_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          },
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "origin_rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Origin Rule Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OriginRuleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
