@@ -9,8 +9,10 @@ This guide covers a more realistic registration flow than the quickstart: search
 
 Instead of checking one domain at a time, search by keyword to get a list of available suggestions across TLDs.
 
-```bash
-curl -X POST https://api.dotlet.com/api/v1/registrar/search \
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://api.dotlet.net/api/v1/registrar/search \
   -H "X-API-Key: dk_••••••••••••••••" \
   -H "Content-Type: application/json" \
   -d '{
@@ -19,6 +21,71 @@ curl -X POST https://api.dotlet.com/api/v1/registrar/search \
     "limit": 10
   }'
 ```
+
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/search', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'dk_••••••••••••••••',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    query: 'acmewidgets',
+    tlds: ['com', 'io', 'dev'],
+    limit: 10
+  })
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.dotlet.net/api/v1/registrar/search',
+    headers={'X-API-Key': 'dk_••••••••••••••••'},
+    json={
+        'query': 'acmewidgets',
+        'tlds': ['com', 'io', 'dev'],
+        'limit': 10
+    }
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	payload := map[string]interface{}{
+		"query": "acmewidgets",
+		"tlds":  []string{"com", "io", "dev"},
+		"limit": 10,
+	}
+	body, _ := json.Marshal(payload)
+
+	req, _ := http.NewRequest("POST", "https://api.dotlet.net/api/v1/registrar/search", bytes.NewBuffer(body))
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(respBody))
+}
+```
+
+</CodeGroup>
 
 The response lists each candidate domain with its availability and price:
 
@@ -39,8 +106,10 @@ The response lists each candidate domain with its availability and price:
 
 When you purchase a domain, you can set `setup_dns` to `true` so Dotlet creates a DNS zone for it immediately, instead of requiring a separate setup call.
 
-```bash
-curl -X POST https://api.dotlet.com/api/v1/registrar/purchase \
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://api.dotlet.net/api/v1/registrar/purchase \
   -H "X-API-Key: dk_••••••••••••••••" \
   -H "Content-Type: application/json" \
   -d '{
@@ -64,6 +133,113 @@ curl -X POST https://api.dotlet.com/api/v1/registrar/purchase \
   }'
 ```
 
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/purchase', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'dk_••••••••••••••••',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    domain: 'acmewidgets.com',
+    years: 1,
+    contact: {
+      first_name: 'Ada',
+      last_name: 'Lovelace',
+      email: 'ada@acmewidgets.com',
+      phone: '+14155550100',
+      address1: '123 Main St',
+      city: 'San Francisco',
+      state: 'CA',
+      postal_code: '94105',
+      country: 'US'
+    },
+    privacy: true,
+    auto_renew: true,
+    setup_dns: true,
+    dns_provider: 'cloudflare'
+  })
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.dotlet.net/api/v1/registrar/purchase',
+    headers={'X-API-Key': 'dk_••••••••••••••••'},
+    json={
+        'domain': 'acmewidgets.com',
+        'years': 1,
+        'contact': {
+            'first_name': 'Ada',
+            'last_name': 'Lovelace',
+            'email': 'ada@acmewidgets.com',
+            'phone': '+14155550100',
+            'address1': '123 Main St',
+            'city': 'San Francisco',
+            'state': 'CA',
+            'postal_code': '94105',
+            'country': 'US'
+        },
+        'privacy': True,
+        'auto_renew': True,
+        'setup_dns': True,
+        'dns_provider': 'cloudflare'
+    }
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	payload := map[string]interface{}{
+		"domain": "acmewidgets.com",
+		"years":  1,
+		"contact": map[string]interface{}{
+			"first_name":  "Ada",
+			"last_name":   "Lovelace",
+			"email":       "ada@acmewidgets.com",
+			"phone":       "+14155550100",
+			"address1":    "123 Main St",
+			"city":        "San Francisco",
+			"state":       "CA",
+			"postal_code": "94105",
+			"country":     "US",
+		},
+		"privacy":      true,
+		"auto_renew":   true,
+		"setup_dns":    true,
+		"dns_provider": "cloudflare",
+	}
+	body, _ := json.Marshal(payload)
+
+	req, _ := http.NewRequest("POST", "https://api.dotlet.net/api/v1/registrar/purchase", bytes.NewBuffer(body))
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(respBody))
+}
+```
+
+</CodeGroup>
+
 The response includes a `dns_setup` object and a `status_url` you can poll while the zone is created and nameservers propagate:
 
 ```json
@@ -81,10 +257,53 @@ The response includes a `dns_setup` object and a `status_url` you can poll while
 
 DNS setup happens asynchronously — creating a zone, updating nameservers at the registrar, and verifying delegation can take a few minutes. Poll the status endpoint until `status` reaches `completed`.
 
-```bash
-curl https://api.dotlet.com/api/v1/registrar/domains/acmewidgets.com/dns-status \
+<CodeGroup>
+
+```bash cURL
+curl https://api.dotlet.net/api/v1/registrar/domains/acmewidgets.com/dns-status \
   -H "X-API-Key: dk_••••••••••••••••"
 ```
+
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/domains/acmewidgets.com/dns-status', {
+  headers: { 'X-API-Key': 'dk_••••••••••••••••' }
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.dotlet.net/api/v1/registrar/domains/acmewidgets.com/dns-status',
+    headers={'X-API-Key': 'dk_••••••••••••••••'}
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	req, _ := http.NewRequest("GET", "https://api.dotlet.net/api/v1/registrar/domains/acmewidgets.com/dns-status", nil)
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(body))
+}
+```
+
+</CodeGroup>
 
 ```json
 {

@@ -16,10 +16,53 @@ This guide takes you from an API key to a registered domain. By the end, you'll 
 
 Send a `GET` request with the domain you want, in the path.
 
-```bash
-curl https://api.dotlet.com/api/v1/registrar/availability/example.com \
+<CodeGroup>
+
+```bash cURL
+curl https://api.dotlet.net/api/v1/registrar/availability/example.com \
   -H "X-API-Key: dk_••••••••••••••••"
 ```
+
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/availability/example.com', {
+  headers: { 'X-API-Key': 'dk_••••••••••••••••' }
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.dotlet.net/api/v1/registrar/availability/example.com',
+    headers={'X-API-Key': 'dk_••••••••••••••••'}
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	req, _ := http.NewRequest("GET", "https://api.dotlet.net/api/v1/registrar/availability/example.com", nil)
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(body))
+}
+```
+
+</CodeGroup>
 
 A domain that's free to register returns `available: true`:
 
@@ -40,8 +83,10 @@ If `available` is `false`, pick a different domain or try one of its suggested a
 
 Once you've found an available domain, register it with a single `POST` request. Registration requires a registrant contact — this is the person or organization the domain will be registered to.
 
-```bash
-curl -X POST https://api.dotlet.com/api/v1/registrar/purchase \
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://api.dotlet.net/api/v1/registrar/purchase \
   -H "X-API-Key: dk_••••••••••••••••" \
   -H "Content-Type: application/json" \
   -d '{
@@ -62,6 +107,107 @@ curl -X POST https://api.dotlet.com/api/v1/registrar/purchase \
     "auto_renew": true
   }'
 ```
+
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/purchase', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'dk_••••••••••••••••',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    domain: 'example.com',
+    years: 1,
+    contact: {
+      first_name: 'Ada',
+      last_name: 'Lovelace',
+      email: 'ada@example.com',
+      phone: '+14155550100',
+      address1: '123 Main St',
+      city: 'San Francisco',
+      state: 'CA',
+      postal_code: '94105',
+      country: 'US'
+    },
+    privacy: true,
+    auto_renew: true
+  })
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.dotlet.net/api/v1/registrar/purchase',
+    headers={'X-API-Key': 'dk_••••••••••••••••'},
+    json={
+        'domain': 'example.com',
+        'years': 1,
+        'contact': {
+            'first_name': 'Ada',
+            'last_name': 'Lovelace',
+            'email': 'ada@example.com',
+            'phone': '+14155550100',
+            'address1': '123 Main St',
+            'city': 'San Francisco',
+            'state': 'CA',
+            'postal_code': '94105',
+            'country': 'US'
+        },
+        'privacy': True,
+        'auto_renew': True
+    }
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	payload := map[string]interface{}{
+		"domain": "example.com",
+		"years":  1,
+		"contact": map[string]interface{}{
+			"first_name":  "Ada",
+			"last_name":   "Lovelace",
+			"email":       "ada@example.com",
+			"phone":       "+14155550100",
+			"address1":    "123 Main St",
+			"city":        "San Francisco",
+			"state":       "CA",
+			"postal_code": "94105",
+			"country":     "US",
+		},
+		"privacy":    true,
+		"auto_renew": true,
+	}
+	body, _ := json.Marshal(payload)
+
+	req, _ := http.NewRequest("POST", "https://api.dotlet.net/api/v1/registrar/purchase", bytes.NewBuffer(body))
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(respBody))
+}
+```
+
+</CodeGroup>
 
 A successful purchase returns the new domain's order ID and registration details:
 
@@ -84,10 +230,53 @@ A successful purchase returns the new domain's order ID and registration details
 
 List your registered domains to confirm the purchase went through.
 
-```bash
-curl https://api.dotlet.com/api/v1/registrar/domains \
+<CodeGroup>
+
+```bash cURL
+curl https://api.dotlet.net/api/v1/registrar/domains \
   -H "X-API-Key: dk_••••••••••••••••"
 ```
+
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/domains', {
+  headers: { 'X-API-Key': 'dk_••••••••••••••••' }
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.dotlet.net/api/v1/registrar/domains',
+    headers={'X-API-Key': 'dk_••••••••••••••••'}
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	req, _ := http.NewRequest("GET", "https://api.dotlet.net/api/v1/registrar/domains", nil)
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(body))
+}
+```
+
+</CodeGroup>
 
 `example.com` should now appear in the response with a `registration_status` of `active`.
 

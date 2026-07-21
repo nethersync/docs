@@ -26,12 +26,71 @@ All calls in this guide go through your backend — never call these endpoints f
 
 Search by keyword to show a list of suggestions, or check one exact domain.
 
-```bash
+<CodeGroup>
+
+```bash cURL
 curl -X POST https://api.dotlet.net/api/v1/registrar/search \
   -H "X-API-Key: dk_••••••••••••••••" \
   -H "Content-Type: application/json" \
   -d '{ "query": "acmewidgets", "tlds": ["com", "io", "dev"], "limit": 10 }'
 ```
+
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/search', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'dk_••••••••••••••••',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ query: 'acmewidgets', tlds: ['com', 'io', 'dev'], limit: 10 })
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.dotlet.net/api/v1/registrar/search',
+    headers={'X-API-Key': 'dk_••••••••••••••••'},
+    json={'query': 'acmewidgets', 'tlds': ['com', 'io', 'dev'], 'limit': 10}
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	payload := map[string]interface{}{
+		"query": "acmewidgets",
+		"tlds":  []string{"com", "io", "dev"},
+		"limit": 10,
+	}
+	body, _ := json.Marshal(payload)
+
+	req, _ := http.NewRequest("POST", "https://api.dotlet.net/api/v1/registrar/search", bytes.NewBuffer(body))
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(respBody))
+}
+```
+
+</CodeGroup>
 
 ```json
 {
@@ -43,16 +102,61 @@ curl -X POST https://api.dotlet.net/api/v1/registrar/search \
 }
 ```
 
-```bash
+<CodeGroup>
+
+```bash cURL
 curl https://api.dotlet.net/api/v1/registrar/availability/acmewidgets.com \
   -H "X-API-Key: dk_••••••••••••••••"
 ```
+
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/availability/acmewidgets.com', {
+  headers: { 'X-API-Key': 'dk_••••••••••••••••' }
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.dotlet.net/api/v1/registrar/availability/acmewidgets.com',
+    headers={'X-API-Key': 'dk_••••••••••••••••'}
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	req, _ := http.NewRequest("GET", "https://api.dotlet.net/api/v1/registrar/availability/acmewidgets.com", nil)
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(body))
+}
+```
+
+</CodeGroup>
 
 ## 2. Register the domain
 
 Collect registrant contact details in your own form, then submit the purchase.
 
-```bash
+<CodeGroup>
+
+```bash cURL
 curl -X POST https://api.dotlet.net/api/v1/registrar/purchase \
   -H "X-API-Key: dk_••••••••••••••••" \
   -H "Content-Type: application/json" \
@@ -75,6 +179,107 @@ curl -X POST https://api.dotlet.net/api/v1/registrar/purchase \
   }'
 ```
 
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/purchase', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'dk_••••••••••••••••',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    domain: 'acmewidgets.com',
+    years: 1,
+    contact: {
+      first_name: 'Ada',
+      last_name: 'Lovelace',
+      email: 'ada@acmewidgets.com',
+      phone: '+14155550100',
+      address1: '123 Main St',
+      city: 'San Francisco',
+      state: 'CA',
+      postal_code: '94105',
+      country: 'US'
+    },
+    privacy: true,
+    auto_renew: true
+  })
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.dotlet.net/api/v1/registrar/purchase',
+    headers={'X-API-Key': 'dk_••••••••••••••••'},
+    json={
+        'domain': 'acmewidgets.com',
+        'years': 1,
+        'contact': {
+            'first_name': 'Ada',
+            'last_name': 'Lovelace',
+            'email': 'ada@acmewidgets.com',
+            'phone': '+14155550100',
+            'address1': '123 Main St',
+            'city': 'San Francisco',
+            'state': 'CA',
+            'postal_code': '94105',
+            'country': 'US'
+        },
+        'privacy': True,
+        'auto_renew': True
+    }
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	payload := map[string]interface{}{
+		"domain": "acmewidgets.com",
+		"years":  1,
+		"contact": map[string]interface{}{
+			"first_name":  "Ada",
+			"last_name":   "Lovelace",
+			"email":       "ada@acmewidgets.com",
+			"phone":       "+14155550100",
+			"address1":    "123 Main St",
+			"city":        "San Francisco",
+			"state":       "CA",
+			"postal_code": "94105",
+			"country":     "US",
+		},
+		"privacy":    true,
+		"auto_renew": true,
+	}
+	body, _ := json.Marshal(payload)
+
+	req, _ := http.NewRequest("POST", "https://api.dotlet.net/api/v1/registrar/purchase", bytes.NewBuffer(body))
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(respBody))
+}
+```
+
+</CodeGroup>
+
 Check `success` on the response before treating the purchase as complete — a `200` with `success: false` means the request was valid but the registrar-side action failed (for example, insufficient funds). See [Errors](/essentials/errors) for this pattern.
 
 ## 3. Store the mapping to your own customer
@@ -93,32 +298,189 @@ Once a customer owns a domain, you need traffic for it to reach your platform �
 
 Once those are confirmed, the shape of this step will be:
 
-```bash
+<CodeGroup>
+
+```bash cURL
 curl -X POST https://api.dotlet.net/api/v1/domains/{domain_id}/origin-rules \
   -H "X-API-Key: dk_••••••••••••••••" \
   -H "Content-Type: application/json" \
   -d '{ }'
 ```
 
-```bash
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/domains/{domain_id}/origin-rules', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'dk_••••••••••••••••',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({})
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.dotlet.net/api/v1/domains/{domain_id}/origin-rules',
+    headers={'X-API-Key': 'dk_••••••••••••••••'},
+    json={}
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	body := []byte(`{}`)
+
+	req, _ := http.NewRequest("POST", "https://api.dotlet.net/api/v1/domains/{domain_id}/origin-rules", bytes.NewBuffer(body))
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(respBody))
+}
+```
+
+</CodeGroup>
+
+<CodeGroup>
+
+```bash cURL
 curl -X POST https://api.dotlet.net/api/v1/domains/origin-rules/{origin_rule_id}/enable \
   -H "X-API-Key: dk_••••••••••••••••"
 ```
+
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/domains/origin-rules/{origin_rule_id}/enable', {
+  method: 'POST',
+  headers: { 'X-API-Key': 'dk_••••••••••••••••' }
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.dotlet.net/api/v1/domains/origin-rules/{origin_rule_id}/enable',
+    headers={'X-API-Key': 'dk_••••••••••••••••'}
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	req, _ := http.NewRequest("POST", "https://api.dotlet.net/api/v1/domains/origin-rules/{origin_rule_id}/enable", nil)
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(body))
+}
+```
+
+</CodeGroup>
 
 ## 5. Manage DNS records
 
 For anything beyond the origin rule — custom subdomains, MX records for customer email, TXT records for verification — manage DNS records directly.
 
 <Note>
-  These endpoints require a bearer token rather than an API key. See [Authentication](/authentication).
+  Listing records accepts either an API key or a bearer token. Creating, reading a single record, updating, deleting, and syncing currently accept an **API key only**. See [Authentication](/authentication) for the full breakdown.
 </Note>
 
-```bash
+<CodeGroup>
+
+```bash cURL
 curl -X POST https://api.dotlet.net/api/v1/registrar/dns/acmewidgets.com/records \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "X-API-Key: dk_••••••••••••••••" \
   -H "Content-Type: application/json" \
   -d '{ "name": "acmewidgets.com", "record_type": "A", "content": "203.0.113.10", "ttl": 300 }'
 ```
+
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/dns/acmewidgets.com/records', {
+  method: 'POST',
+  headers: {
+    'X-API-Key': 'dk_••••••••••••••••',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ name: 'acmewidgets.com', record_type: 'A', content: '203.0.113.10', ttl: 300 })
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.dotlet.net/api/v1/registrar/dns/acmewidgets.com/records',
+    headers={'X-API-Key': 'dk_••••••••••••••••'},
+    json={'name': 'acmewidgets.com', 'record_type': 'A', 'content': '203.0.113.10', 'ttl': 300}
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	payload := map[string]interface{}{
+		"name":        "acmewidgets.com",
+		"record_type": "A",
+		"content":     "203.0.113.10",
+		"ttl":         300,
+	}
+	body, _ := json.Marshal(payload)
+
+	req, _ := http.NewRequest("POST", "https://api.dotlet.net/api/v1/registrar/dns/acmewidgets.com/records", bytes.NewBuffer(body))
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(respBody))
+}
+```
+
+</CodeGroup>
 
 See [Manage DNS records](/guides/manage-dns-records) for the full create/update/delete/sync flow.
 

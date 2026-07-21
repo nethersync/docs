@@ -10,16 +10,59 @@ The Dotlet API supports two ways to authenticate, depending on where the request
 | **API key** | Calling the API directly from a server, script, or backend integration | `X-API-Key` |
 | **Bearer token** | Calling the API on behalf of a signed-in user, such as from a dashboard or session | `Authorization: Bearer <token>` |
 
-Most endpoints accept either method. The DNS record endpoints (`/api/v1/dns/{domain_name}/records/*`) currently require a bearer token issued through OAuth2 password flow, since they're scoped to an authenticated dashboard session.
+Most endpoints accept either method. **DNS record endpoints are the exception** — `create`, `get`, `update`, `delete`, and `sync` on `/api/v1/registrar/dns/{domain_name}/records/*` currently accept an **API key only**. Listing records (`GET /api/v1/registrar/dns/{domain_name}/records`) accepts either method, same as everything else.
 
 ## Authenticate with an API key
 
 Generate an API key from your Dotlet dashboard, then pass it on every request in the `X-API-Key` header.
 
-```bash
-curl https://api.dotlet.com/api/v1/registrar/availability/example.com \
+<CodeGroup>
+
+```bash cURL
+curl https://api.dotlet.net/api/v1/registrar/availability/example.com \
   -H "X-API-Key: dk_••••••••••••••••"
 ```
+
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/availability/example.com', {
+  headers: { 'X-API-Key': 'dk_••••••••••••••••' }
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.dotlet.net/api/v1/registrar/availability/example.com',
+    headers={'X-API-Key': 'dk_••••••••••••••••'}
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	req, _ := http.NewRequest("GET", "https://api.dotlet.net/api/v1/registrar/availability/example.com", nil)
+	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(body))
+}
+```
+
+</CodeGroup>
 
 <Warning>
   Treat your API key like a password. Don't commit it to version control or expose it in client-side code. If a key is exposed, revoke it from your dashboard and generate a new one.
@@ -29,12 +72,59 @@ curl https://api.dotlet.com/api/v1/registrar/availability/example.com \
 
 For endpoints that operate on behalf of a signed-in user, obtain a token from the password token endpoint and send it in the `Authorization` header.
 
-```bash
-curl https://api.dotlet.com/api/v1/dns/example.com/records \
+<CodeGroup>
+
+```bash cURL
+curl https://api.dotlet.net/api/v1/registrar/dns/example.com/records \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
+```javascript JavaScript
+const response = await fetch('https://api.dotlet.net/api/v1/registrar/dns/example.com/records', {
+  headers: { 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }
+});
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.dotlet.net/api/v1/registrar/dns/example.com/records',
+    headers={'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'}
+)
+print(response.json())
+```
+
+```go Go
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
+func main() {
+	req, _ := http.NewRequest("GET", "https://api.dotlet.net/api/v1/registrar/dns/example.com/records", nil)
+	req.Header.Set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+
+	resp, _ := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(body))
+}
+```
+
+</CodeGroup>
+
 Tokens expire. If a request fails with a `401`, request a new token rather than retrying with the expired one.
+
+<Note>
+  This example works because listing DNS records accepts either an API key or a bearer token. Creating, reading a single record, updating, deleting, or syncing records currently accepts an **API key only** — use `X-API-Key` for those, even in a session-based context.
+</Note>
 
 ## Handling authentication errors
 
