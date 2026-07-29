@@ -1269,7 +1269,7 @@
         ]
       }
     },
-     "/api/v1/domains/{domain_id}/origin-rules": {
+    "/api/v1/domains/{domain_id}/origin-rules": {
       "post": {
         "summary": "Create Origin Rule",
         "operationId": "create_origin_rule_api_v1_domains__domain_id__origin_rules_post",
@@ -3203,6 +3203,83 @@
         ],
         "title": "NameserverUpdateResponse",
         "description": "Response for nameserver update"
+      },
+      "OriginRuleCreateRequest": {
+        "properties": {
+          "target_subdomain": {
+            "type": "string",
+            "title": "Target Subdomain",
+            "description": "The tenant's target subdomain to route traffic to."
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_subdomain"
+        ],
+        "title": "OriginRuleCreateRequest"
+      },
+      "OriginRuleResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "domain_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Domain Id"
+          },
+          "rule_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OriginRuleStatus"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "rollback_data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rollback Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "domain_id",
+          "rule_id",
+          "status",
+          "enabled",
+          "rollback_data"
+        ],
+        "title": "OriginRuleResponse"
+      },
+      "OriginRuleStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "active",
+          "failed"
+        ],
+        "title": "OriginRuleStatus"
       },
       "PaginatedDomainOrderResponse": {
         "properties": {

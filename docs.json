@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "linden",
+  "theme": "maple",
   "name": "Dotlet Documentation",
   "colors": {
     "primary": "#ff5724",
@@ -11,7 +11,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Documentation",
+        "tab": "Get Started",
         "groups": [
           {
             "group": "Get Started",
@@ -36,6 +36,21 @@
               "guides/embed-hosted-checkout"
             ]
           }
+        ]
+      },
+      {
+        "tab": "Integration Paths",
+        "pages": [
+              "integration-paths/direct-integration",
+              "integration-paths/hosted-checkout"
+            ]
+      },
+      {
+        "tab": "Guides",
+        "pages": [
+          "guides/search-and-register-a-domain",
+          "guides/manage-dns-records",
+          "guides/embed-hosted-checkout"
         ]
       },
       {
@@ -83,17 +98,17 @@
             ]
           },
           {
-            "group": "Hosted Sessions",
-            "pages": [
-              "api-reference/hosted-sessions/create-hosted-session"
-            ]
-          },
-          {
             "group": "Origin Rules",
             "pages": [
               "api-reference/origin-rules/create-origin-rule",
               "api-reference/origin-rules/enable-origin-rule",
               "api-reference/origin-rules/disable-origin-rule"
+            ]
+          },
+          {
+            "group": "Hosted Sessions",
+            "pages": [
+              "api-reference/hosted-sessions/create-hosted-session"
             ]
           }
         ]
@@ -107,10 +122,6 @@
   "navbar": {
     "links": [
       
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
     ],
     "primary": {
       "type": "button",
