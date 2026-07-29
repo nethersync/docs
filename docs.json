@@ -22,20 +22,35 @@
             ]
           },
           {
+            "group": "Integration Paths",
+            "pages": [
+              "integration-paths/direct-integration",
+              "integration-paths/hosted-checkout"
+            ]
+          },
+          {
             "group": "Guides",
             "pages": [
               "guides/search-and-register-a-domain",
               "guides/manage-dns-records",
               "guides/embed-hosted-checkout"
             ]
-          },
-          {
-            "group": "Integration Paths",
-            "pages": [
+          }
+        ]
+      },
+      {
+        "tab": "Integration Paths",
+        "pages": [
               "integration-paths/direct-integration",
               "integration-paths/hosted-checkout"
             ]
-          }
+      },
+      {
+        "tab": "Guides",
+        "pages": [
+          "guides/search-and-register-a-domain",
+          "guides/manage-dns-records",
+          "guides/embed-hosted-checkout"
         ]
       },
       {
@@ -83,17 +98,17 @@
             ]
           },
           {
-            "group": "Hosted Sessions",
-            "pages": [
-              "api-reference/hosted-sessions/create-hosted-session"
-            ]
-          },
-          {
             "group": "Origin Rules",
             "pages": [
               "api-reference/origin-rules/create-origin-rule",
               "api-reference/origin-rules/enable-origin-rule",
               "api-reference/origin-rules/disable-origin-rule"
+            ]
+          },
+          {
+            "group": "Hosted Sessions",
+            "pages": [
+              "api-reference/hosted-sessions/create-hosted-session"
             ]
           }
         ]

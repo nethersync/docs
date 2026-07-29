@@ -85,10 +85,6 @@ The response looks like:
 }
 ```
 
-<Warning>
-  **Fill in:** confirm the `checkout.dotlet.net` host above — it's inferred from the field name (`embed_url`), not stated anywhere in the spec or demo repo. Verify against a real response before publishing.
-</Warning>
-
 ## Step 2: Embed the iframe on your frontend
 
 Call your backend route, then render the returned `embed_url` in an iframe.
@@ -160,9 +156,6 @@ useEffect(() => {
 | `cancel` | The customer closes or cancels the flow | — |
 | `error` | Something failed inside the hosted UI | `message` |
 
-<Warning>
-  The reference implementation checks `data.source === 'dotlet-checkout'` but doesn't verify `event.origin` (its code comments this out with "In production, we'd verify event.origin"). **Fill in:** the real origin to check against (e.g. `https://checkout.dotlet.net`) so a page on another domain can't spoof these messages — this is a production security requirement, not optional.
-</Warning>
 
 ## Theming
 

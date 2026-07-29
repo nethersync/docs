@@ -288,15 +288,7 @@ Dotlet doesn't know which of your customers a domain belongs to — that mapping
 
 ## 4. Route the domain to your platform
 
-Once a customer owns a domain, you need traffic for it to reach your platform — this is what an **origin rule** does. This is the one part of direct integration where the spec has gaps I can't fill in from the current `openapi.json`:
-
-<Warning>
-  `OriginRuleCreateRequest` and `OriginRuleResponse` are referenced by the origin-rule endpoints but aren't defined anywhere in the spec's `components/schemas` — so the actual request/response fields (what you set as the origin: an IP? a hostname? a customer identifier?) aren't documented. **Fill in:** the real field list once you have it, ideally by regenerating `openapi.json` from a build where those schemas are present.
-
-  Separately, `POST /domains/{domain_id}/origin-rules` takes a `domain_id` (UUID) in the path, but none of the registrar responses (`DomainInfoResponse`, `DomainPurchaseResponse`, `DomainListResponse`) expose a `domain_id` field — only a `registrar_domain_id` string, which may or may not be the same value. **Fill in:** confirm where a caller is meant to get this UUID from.
-</Warning>
-
-Once those are confirmed, the shape of this step will be:
+Once a customer owns a domain, you need traffic for it to reach your platform — this is what an **origin rule** does. Create one and point it at the tenant's subdomain on your platform:
 
 <CodeGroup>
 
@@ -304,7 +296,7 @@ Once those are confirmed, the shape of this step will be:
 curl -X POST https://api.dotlet.net/api/v1/domains/{domain_id}/origin-rules \
   -H "X-API-Key: dk_••••••••••••••••" \
   -H "Content-Type: application/json" \
-  -d '{ }'
+  -d '{ "target_subdomain": "acmewidgets.yourplatform.com" }'
 ```
 
 ```javascript JavaScript
@@ -314,7 +306,7 @@ const response = await fetch('https://api.dotlet.net/api/v1/domains/{domain_id}/
     'X-API-Key': 'dk_••••••••••••••••',
     'Content-Type': 'application/json'
   },
-  body: JSON.stringify({})
+  body: JSON.stringify({ target_subdomain: 'acmewidgets.yourplatform.com' })
 });
 const data = await response.json();
 console.log(data);
@@ -326,7 +318,7 @@ import requests
 response = requests.post(
     'https://api.dotlet.net/api/v1/domains/{domain_id}/origin-rules',
     headers={'X-API-Key': 'dk_••••••••••••••••'},
-    json={}
+    json={'target_subdomain': 'acmewidgets.yourplatform.com'}
 )
 print(response.json())
 ```
@@ -336,13 +328,17 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 )
 
 func main() {
-	body := []byte(`{}`)
+	payload := map[string]interface{}{
+		"target_subdomain": "acmewidgets.yourplatform.com",
+	}
+	body, _ := json.Marshal(payload)
 
 	req, _ := http.NewRequest("POST", "https://api.dotlet.net/api/v1/domains/{domain_id}/origin-rules", bytes.NewBuffer(body))
 	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
@@ -358,54 +354,25 @@ func main() {
 
 </CodeGroup>
 
-<CodeGroup>
+The response returns the rule's own `id`, the `domain_id` it belongs to, a `status` (`pending`, `active`, or `failed`), and whether it's currently `enabled`:
+
+```json
+{
+  "id": "b7e4c1a2-9f3d-4e5a-8c6b-1d2e3f4a5b6c",
+  "domain_id": "6f9b3a2e-1c4d-4f5e-8a7b-2d3e4f5a6b7c",
+  "rule_id": null,
+  "status": "pending",
+  "enabled": false,
+  "rollback_data": null
+}
+```
+
+Once the rule is created, enable it to start routing traffic:
 
 ```bash cURL
 curl -X POST https://api.dotlet.net/api/v1/domains/origin-rules/{origin_rule_id}/enable \
   -H "X-API-Key: dk_••••••••••••••••"
 ```
-
-```javascript JavaScript
-const response = await fetch('https://api.dotlet.net/api/v1/domains/origin-rules/{origin_rule_id}/enable', {
-  method: 'POST',
-  headers: { 'X-API-Key': 'dk_••••••••••••••••' }
-});
-const data = await response.json();
-console.log(data);
-```
-
-```python Python
-import requests
-
-response = requests.post(
-    'https://api.dotlet.net/api/v1/domains/origin-rules/{origin_rule_id}/enable',
-    headers={'X-API-Key': 'dk_••••••••••••••••'}
-)
-print(response.json())
-```
-
-```go Go
-package main
-
-import (
-	"fmt"
-	"io"
-	"net/http"
-)
-
-func main() {
-	req, _ := http.NewRequest("POST", "https://api.dotlet.net/api/v1/domains/origin-rules/{origin_rule_id}/enable", nil)
-	req.Header.Set("X-API-Key", "dk_••••••••••••••••")
-
-	resp, _ := http.DefaultClient.Do(req)
-	defer resp.Body.Close()
-
-	body, _ := io.ReadAll(resp.Body)
-	fmt.Println(string(body))
-}
-```
-
-</CodeGroup>
 
 ## 5. Manage DNS records
 
@@ -487,7 +454,7 @@ See [Manage DNS records](/guides/manage-dns-records) for the full create/update/
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Hosted checkout" icon="window" href="/integration-path/hosted-checkout">
+  <Card title="Hosted checkout" icon="window" href="/integration-paths/hosted-checkout">
     Compare against the lower-effort iframe-based path.
   </Card>
   <Card title="API Reference" icon="code" href="/api-reference/introduction">
