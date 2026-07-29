@@ -22,18 +22,18 @@
             ]
           },
           {
+            "group": "Integration Paths",
+            "pages": [
+              "integration-paths/direct-integration",
+              "integration-paths/hosted-checkout"
+            ]
+          },
+          {
             "group": "Guides",
             "pages": [
               "guides/search-and-register-a-domain",
               "guides/manage-dns-records",
               "guides/embed-hosted-checkout"
-            ]
-          },
-          {
-            "group": "Integration Paths",
-            "pages": [
-              "integration-paths/direct-integration",
-              "integration-paths/hosted-checkout"
             ]
           }
         ]
@@ -106,6 +106,7 @@
   },
   "navbar": {
     "links": [
+      
       {
         "label": "Support",
         "href": "mailto:hi@mintlify.com"
