@@ -1,24 +1,24 @@
 ---
 title: "Hosted checkout"
-description: "Add one backend endpoint and an iframe to let customers manage domains without leaving your product — Dotlet builds and hosts the UI."
+description: "Add one backend endpoint and an iframe to let customers manage domains without leaving your product while Dotlet builds and hosts the UI."
 ---
 
-Hosted checkout is the fastest way to offer domain search, purchase, and management inside your product. You add one backend endpoint that creates a session, and one iframe on the frontend that loads Dotlet's hosted UI. Dotlet builds, hosts, and updates the actual search/purchase/DNS screens — you don't build any of that UI yourself.
+Hosted checkout is the fastest way to offer domain search, purchase, and management inside your product. You add one backend endpoint that creates a session, and one iframe on the frontend that loads Dotlet's hosted UI. Dotlet builds, hosts, and updates the actual search/purchase/DNS screens and you don't have to build any of that UI yourself.
 
 Choose this path if you want customers managing domains as soon as possible, and don't need to control the exact look and feel of every screen beyond basic theming (logo, brand name, primary color).
 
 <Tip>
-  Prefer to own the UI pixel-for-pixel, or build a flow that doesn't look like an iframe at all? See [Direct integration](/integration-path/direct-integration) instead.
+  Prefer to own the UI pixel-for-pixel, or build a flow that doesn't look like an iframe at all? See [Direct integration](/integration-paths/direct-integration) instead.
 </Tip>
 
 ## How it works
 
-1. Your frontend asks **your own backend** to start a domain session (never call Dotlet directly from the browser — that would expose your API key).
+1. Your frontend asks **your own backend** to start a domain session (never call Dotlet directly from the browser, that would expose your API key).
 2. Your backend calls `POST /api/v1/hosted/sessions` with your Dotlet API key and gets back an `embed_url`.
 3. Your frontend renders that `embed_url` in an iframe.
 4. The iframe posts `window.postMessage` events back to your page as the customer moves through the flow, so you know when to resize, close, or show a success state.
 
-A full reference implementation (Next.js) is available at [nethersync/dotlet-widget-demo](https://github.com/nethersync/dotlet-widget-demo) — the code below is adapted from it.
+A full reference implementation (Next.js) is available at [nethersync/dotlet-widget-demo](https://github.com/nethersync/dotlet-widget-demo). See the code snippets below.
 
 ## Step 1: Create a backend endpoint
 
@@ -61,10 +61,10 @@ export async function POST(request: Request) {
 ```
 
 <Info>
-  This example is Next.js, matching the reference repo. The pattern is the same in any backend — one server-side route that calls `POST /api/v1/hosted/sessions` with your API key and forwards the JSON response to your frontend. **Fill in:** an equivalent snippet for your own stack if it isn't Node/Next.js.
+  This example is Next.js, matching the reference repo. The pattern is the same in any backend, one server-side route that calls `POST /api/v1/hosted/sessions` with your API key and forwards the JSON response to your frontend.
 </Info>
 
-`external_user_id` and `external_account_id` are optional but recommended — they let you correlate anything the customer does in the session (a purchase, a DNS change) back to your own user and account records. `allowed_actions` scopes what the session can do; see the table below.
+`external_user_id` and `external_account_id` are optional but recommended, they let you correlate anything the customer does in the session (a purchase, a DNS change) back to your own user and account records. `allowed_actions` scopes what the session can do; see the table below.
 
 | Action | Allows |
 |---|---|
@@ -167,7 +167,7 @@ useEffect(() => {
 | `primary_color` | string | Hex color used for buttons and accents |
 | `logo_url` | string | Your logo, shown instead of Dotlet's |
 
-All three fields are optional. You can also pass a `metadata` object (any JSON) on the session request if you want to attach your own data to the session — it isn't used by Dotlet, only stored against the session.
+All three fields are optional. You can also pass a `metadata` object (any JSON) on the session request if you want to attach your own data to the session; it isn't used by Dotlet, only stored against the session.
 
 ## Session expiry
 
@@ -176,7 +176,7 @@ Sessions expire after `expires_in_minutes` (5–1440, default 60). Create a new 
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Direct integration" icon="code" href="/integration-path/direct-integration">
+  <Card title="Direct integration" icon="code" href="/integration-paths/direct-integration">
     Build your own UI on top of the raw domain and DNS endpoints instead.
   </Card>
   <Card title="Hosted Sessions API reference" icon="window" href="/api-reference/hosted-sessions/create-hosted-session">

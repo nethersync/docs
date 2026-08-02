@@ -3,7 +3,7 @@ title: "Manage DNS records"
 description: "Create, update, and sync DNS records for a domain you've registered or hosted with Dotlet."
 ---
 
-Once a domain has a DNS zone — created during purchase or with [setup-dns](/api-reference/domains/setup-dns-for-domain) — you can manage its records directly through the API.
+Once a domain has a DNS zone, created during purchase or with [setup-dns](/api-reference/domains/setup-dns-for-domain), you can manage its records directly through the API.
 
 <Note>
   Listing records accepts either an API key or a bearer token. Creating, reading a single record, updating, deleting, and syncing currently accept an **API key only**. See [Authentication](/authentication) for the full breakdown.
@@ -208,11 +208,11 @@ func main() {
 }
 ```
 
-For subdomains, include the full hostname in `name` — for example, `api.acmewidgets.com`. For an `MX` record, also set `priority`; for a Cloudflare-hosted zone, set `proxied: true` to route traffic through Cloudflare's proxy.
+For subdomains, include the full hostname in `name`, for example, `api.acmewidgets.com`. For an `MX` record, also set `priority`; for a Cloudflare-hosted zone, set `proxied: true` to route traffic through Cloudflare's proxy.
 
 ## Update a record
 
-Send only the fields you want to change — `PUT` here behaves as a partial update, so omitted fields keep their current value.
+Send only the fields you want to change, `PUT` here behaves as a partial update, so omitted fields keep their current value.
 
 <CodeGroup>
 

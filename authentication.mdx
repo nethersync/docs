@@ -10,7 +10,7 @@ The Dotlet API supports two ways to authenticate, depending on where the request
 | **API key** | Calling the API directly from a server, script, or backend integration | `X-API-Key` |
 | **Bearer token** | Calling the API on behalf of a signed-in user, such as from a dashboard or session | `Authorization: Bearer <token>` |
 
-Most endpoints accept either method. **DNS record endpoints are the exception** — `create`, `get`, `update`, `delete`, and `sync` on `/api/v1/registrar/dns/{domain_name}/records/*` currently accept an **API key only**. Listing records (`GET /api/v1/registrar/dns/{domain_name}/records`) accepts either method, same as everything else.
+Most endpoints accept either method. **DNS record endpoints are the exception**: `create`, `get`, `update`, `delete`, and `sync` on `/api/v1/registrar/dns/{domain_name}/records/*` currently accept an **API key only**. Listing records (`GET /api/v1/registrar/dns/{domain_name}/records`) accepts either method, same as everything else.
 
 ## Authenticate with an API key
 
@@ -123,7 +123,7 @@ func main() {
 Tokens expire. If a request fails with a `401`, request a new token rather than retrying with the expired one.
 
 <Note>
-  This example works because listing DNS records accepts either an API key or a bearer token. Creating, reading a single record, updating, deleting, or syncing records currently accepts an **API key only** — use `X-API-Key` for those, even in a session-based context.
+  This example works because listing DNS records accepts either an API key or a bearer token. Creating, reading a single record, updating, deleting, or syncing records currently accepts an **API key only**, use `X-API-Key` for those, even in a session-based context.
 </Note>
 
 ## Handling authentication errors

@@ -3,12 +3,12 @@ title: "Direct integration"
 description: "Build your own domain search, purchase, and DNS management UI on top of the Dotlet API."
 ---
 
-Direct integration means you build the UI — search results, purchase forms, DNS record tables — and call Dotlet's API from your backend to power it. You have full control over every screen; Dotlet just handles the registrar, DNS, and routing work behind it.
+Direct integration means you build the UI (search results, purchase forms, DNS record tables) and call Dotlet's API from your backend to power it. You have full control over every screen; Dotlet just handles the registrar, DNS, and routing work behind it.
 
 Choose this path if you need the domain flow to look and behave exactly like the rest of your product, or if you need to fold it into an existing multi-step onboarding flow rather than dropping in a separate screen.
 
 <Tip>
-  Want something working today with minimal UI work? See [Hosted checkout](/integration-path/hosted-checkout) instead — one backend endpoint plus an iframe, and Dotlet's hosted UI does the rest.
+  Want something working today with minimal UI work? See [Hosted checkout](/integration-paths/hosted-checkout) instead; one backend endpoint plus an iframe, and Dotlet's hosted UI does the rest.
 </Tip>
 
 ## What you build vs. what Dotlet handles
@@ -20,7 +20,7 @@ Choose this path if you need the domain flow to look and behave exactly like the
 | DNS record editor | Creating, validating, and syncing DNS records |
 | Domain-to-customer mapping in your own database | Routing traffic for a customer's domain to your platform (origin rules) |
 
-All calls in this guide go through your backend — never call these endpoints from the browser, since they require your Dotlet API key.
+All calls in this guide go through your backend, never call these endpoints from the browser, since they require your Dotlet API key.
 
 ## 1. Search and check availability
 
@@ -280,7 +280,7 @@ func main() {
 
 </CodeGroup>
 
-Check `success` on the response before treating the purchase as complete — a `200` with `success: false` means the request was valid but the registrar-side action failed (for example, insufficient funds). See [Errors](/essentials/errors) for this pattern.
+Check `success` on the response before treating the purchase as complete, a `200` with `success: false` means the request was valid but the registrar-side action failed (for example, insufficient funds). See [Errors](/essentials/errors) for this pattern.
 
 ## 3. Store the mapping to your own customer
 
@@ -288,7 +288,7 @@ Dotlet doesn't know which of your customers a domain belongs to — that mapping
 
 ## 4. Route the domain to your platform
 
-Once a customer owns a domain, you need traffic for it to reach your platform — this is what an **origin rule** does. Create one and point it at the tenant's subdomain on your platform:
+Once a customer owns a domain, you need traffic for it to reach your platform; this is what an **origin rule** does. Create one and point it at the tenant's subdomain on your platform:
 
 <CodeGroup>
 
@@ -376,7 +376,7 @@ curl -X POST https://api.dotlet.net/api/v1/domains/origin-rules/{origin_rule_id}
 
 ## 5. Manage DNS records
 
-For anything beyond the origin rule — custom subdomains, MX records for customer email, TXT records for verification — manage DNS records directly.
+For anything beyond the origin rule (custom subdomains, MX records for customer email, TXT records for verification) manage DNS records directly.
 
 <Note>
   Listing records accepts either an API key or a bearer token. Creating, reading a single record, updating, deleting, and syncing currently accept an **API key only**. See [Authentication](/authentication) for the full breakdown.
