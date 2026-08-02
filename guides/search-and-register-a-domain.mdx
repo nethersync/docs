@@ -100,7 +100,7 @@ The response lists each candidate domain with its availability and price:
 }
 ```
 
-`tlds` is optional — omit it to search the registrar's default set of extensions.
+`tlds` is optional, omit it to search the registrar's default set of extensions.
 
 ## Register the domain with DNS set up automatically
 
@@ -255,7 +255,7 @@ The response includes a `dns_setup` object and a `status_url` you can poll while
 
 ## Check DNS setup progress
 
-DNS setup happens asynchronously — creating a zone, updating nameservers at the registrar, and verifying delegation can take a few minutes. Poll the status endpoint until `status` reaches `completed`.
+DNS setup happens asynchronously; creating a zone, updating nameservers at the registrar, and verifying delegation can take a few minutes. Poll the status endpoint until `status` reaches `completed`.
 
 <CodeGroup>
 
@@ -323,13 +323,13 @@ func main() {
 `ns_delegation_verified` flips to `true` once the new nameservers have propagated. Until then, the domain still resolves through its previous configuration.
 
 <Tip>
-  If you didn't set `setup_dns` during purchase, trigger it later with [`POST /registrar/domains/{domain}/setup-dns`](/api-reference/domains/setup-dns-for-domain) — it accepts the same `dns_provider` field.
+  If you didn't set `setup_dns` during purchase, trigger it later with [`POST /registrar/domains/{domain}/setup-dns`](/api-reference/domains/setup-dns-for-domain), it accepts the same `dns_provider` field.
 </Tip>
 
 ## What didn't get covered here
 
-- **Manual nameserver control** — if you manage DNS with a provider other than the ones Dotlet integrates with, skip `setup_dns` and point nameservers yourself with [`PUT /registrar/domains/{domain}/nameservers`](/api-reference/domains/update-nameservers).
-- **Reviewing price before charging** — to show a customer a price and get their confirmation before billing, create an order with [`POST /registrar/order`](/api-reference/orders/create-order) instead of purchasing directly.
+- **Manual nameserver control**: if you manage DNS with a provider other than the ones Dotlet integrates with, skip `setup_dns` and point nameservers yourself with [`PUT /registrar/domains/{domain}/nameservers`](/api-reference/domains/update-nameservers).
+- **Reviewing price before charging**: to show a customer a price and get their confirmation before billing, create an order with [`POST /registrar/order`](/api-reference/orders/create-order) instead of purchasing directly.
 
 ## Next steps
 

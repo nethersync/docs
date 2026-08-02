@@ -5,7 +5,7 @@ description: "Let your own users search for and purchase domains inside your pro
 
 Hosted sessions give you a pre-built, embeddable domain search-and-purchase flow. Create a session scoped to one of your end users, then redirect them to its URL or embed it in an iframe.
 
-This is useful if you're building a product where your own customers register domains — a website builder or hosting platform, for example — and don't want to build and maintain that flow yourself.
+This is useful if you're building a product where your own customers register domains (for example, a website builder or hosting platform) and don't want to build and maintain that flow yourself.
 
 ## Create a hosted session
 
@@ -113,7 +113,7 @@ func main() {
 
 </CodeGroup>
 
-`external_user_id` and `external_account_id` let you correlate the session — and anything purchased through it — back to your own user records. They're optional but recommended.
+`external_user_id` and `external_account_id` let you correlate the session, and anything purchased through it, back to your own user records. They're optional but recommended.
 
 ```json
 {
@@ -129,8 +129,8 @@ func main() {
 
 Use whichever fits your product:
 
-- **Redirect** — send the user's browser to `hosted_url` for a full-page checkout experience.
-- **Embed** — load `embed_url` in an `<iframe>` to keep the user inside your own product.
+- **Redirect**: sends the user's browser to `hosted_url` for a full-page checkout experience.
+- **Embed**: loads `embed_url` in an `<iframe>` to keep the user inside your own product.
 
 ```html
 <iframe
@@ -143,7 +143,7 @@ Use whichever fits your product:
 
 ## Session expiry
 
-Sessions expire after `expires_in_minutes` (5–1440 minutes, default 60). Create a new session each time a user starts a domain search or purchase flow — don't reuse a session across visits, since an expired session shows the user an error instead of the checkout flow.
+Sessions expire after `expires_in_minutes` (5–1440 minutes, default 60). Create a new session each time a user starts a domain search or purchase flow, don't reuse a session across visits, since an expired session shows the user an error instead of the checkout flow.
 
 ## Available actions
 
@@ -154,7 +154,7 @@ Sessions expire after `expires_in_minutes` (5–1440 minutes, default 60). Creat
 | `dns_manage` | Creating and editing DNS records for domains the user owns |
 | `renew` | Renewing a domain before it expires |
 
-Combine actions based on what you want the user to be able to do in that session — for example, a renewal reminder email might link to a session scoped to `["renew"]` only.
+Combine actions based on what you want the user to be able to do in that session, for example, a renewal reminder email might link to a session scoped to `["renew"]` only.
 
 ## Next steps
 
